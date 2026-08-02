@@ -795,16 +795,45 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     9. Sistema de Modales Interactivos
+     9. Sistema de Modales Interactivos & Galería Lightbox
      ========================================================================== */
   function initModals() {
     const btnAbout = document.getElementById('btn-about');
     const btnMethodology = document.getElementById('btn-methodology');
+    const btnGallery = document.getElementById('btn-gallery');
     const btnImport = document.getElementById('btn-import');
 
     if (btnAbout) btnAbout.addEventListener('click', () => openModal('modal-about'));
     if (btnMethodology) btnMethodology.addEventListener('click', () => openModal('modal-methodology'));
+    if (btnGallery) btnGallery.addEventListener('click', () => openModal('modal-gallery'));
     if (btnImport) btnImport.addEventListener('click', () => openModal('modal-import'));
+
+    // Lightbox handlers
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const btnCloseLightbox = document.getElementById('btn-close-lightbox');
+
+    document.querySelectorAll('.gallery-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const fullSrc = card.getAttribute('data-full');
+        const caption = card.getAttribute('data-caption');
+        if (lightbox && lightboxImg) {
+          lightboxImg.src = fullSrc;
+          if (lightboxCaption) lightboxCaption.innerText = caption;
+          lightbox.classList.add('active');
+        }
+      });
+    });
+
+    if (btnCloseLightbox && lightbox) {
+      btnCloseLightbox.addEventListener('click', () => lightbox.classList.remove('active'));
+    }
+    if (lightbox) {
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) lightbox.classList.remove('active');
+      });
+    }
 
     // Close Modal Listeners
     document.querySelectorAll('.btn-close-modal, [data-close]').forEach(btn => {
