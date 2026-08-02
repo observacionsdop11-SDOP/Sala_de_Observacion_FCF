@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://observacionsdop11-sdop.github.io/Sala_de_Observacion_FCF/sitemap.xml
