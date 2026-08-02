@@ -1,0 +1,67 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "PAIS": "Perú", "CODIGO": "PER", "CAPITAL": "Lima" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-81.3, -0.05], [-75.2, -0.05], [-69.9, -4.2], [-68.7, -12.5], 
+          [-69.6, -17.6], [-71.3, -18.3], [-75.5, -15.4], [-81.3, -4.6], [-81.3, -0.05]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "PAIS": "Brasil", "CODIGO": "BRA", "CAPITAL": "Brasilia" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-69.9, -4.2], [-60.0, 5.2], [-51.1, 4.4], [-34.8, -7.5], 
+          [-41.0, -22.5], [-53.4, -33.7], [-57.6, -30.2], [-65.0, -20.0], [-68.7, -12.5], [-69.9, -4.2]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "PAIS": "Colombia", "CODIGO": "COL", "CAPITAL": "Bogotá" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.0, 1.5], [-77.5, 8.5], [-73.0, 11.8], [-67.4, 6.2], [-69.9, -4.2], [-75.2, -0.05], [-79.0, 1.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "PAIS": "Ecuador", "CODIGO": "ECU", "CAPITAL": "Quito" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-81.0, 1.4], [-75.2, -0.05], [-81.3, -0.05], [-81.0, 1.4]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "PAIS": "Bolivia", "CODIGO": "BOL", "CAPITAL": "La Paz / Sucre" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-69.6, -17.6], [-68.7, -12.5], [-65.0, -20.0], [-57.6, -22.0], [-62.0, -22.9], [-69.6, -22.8], [-69.6, -17.6]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "PAIS": "Chile", "CODIGO": "CHL", "CAPITAL": "Santiago" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-71.3, -18.3], [-69.6, -17.6], [-69.6, -22.8], [-67.0, -55.0], [-75.0, -45.0], [-71.3, -18.3]
+        ]]
+      }
+    }
+  ]
+}

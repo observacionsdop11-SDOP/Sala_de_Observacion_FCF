@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMap();
   initAnimatedKPIs();
   initLayerSelector();
+  initVectorBoundaryLayers();
   initDrawingTools();
   initCoordinateTracker();
   initDragAndDrop();
@@ -157,6 +158,62 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.classList.add('active');
         }
       });
+    });
+  }
+
+  /* ==========================================================================
+     4b. Capas Vectoriales de Límites Políticos (Sudamérica, Departamentos, Provincias, Distritos)
+     ========================================================================== */
+  function initVectorBoundaryLayers() {
+    state.vectorLayers = {};
+
+    const configs = [
+      { id: 'chk-sudamerica', key: 'sudamerica', url: 'data/sudamerica.geojson', style: { color: '#64748b', weight: 1.5, fillOpacity: 0.05, dashArray: '4, 4' } },
+      { id: 'chk-departamentos', key: 'departamentos', url: 'data/departamentos.geojson', style: { color: '#10b981', weight: 2, fillOpacity: 0.15 } },
+      { id: 'chk-provincias', key: 'provincias', url: 'data/provincias.geojson', style: { color: '#f59e0b', weight: 1.8, fillOpacity: 0.1, dashArray: '3, 3' } },
+      { id: 'chk-distritos', key: 'distritos', url: 'data/distritos.geojson', style: { color: '#ef4444', weight: 1.5, fillOpacity: 0.2 } }
+    ];
+
+    configs.forEach(cfg => {
+      const checkbox = document.getElementById(cfg.id);
+      
+      // Fetch GeoJSON file
+      fetch(cfg.url)
+        .then(res => res.json())
+        .then(data => {
+          const layer = L.geoJSON(data, {
+            style: cfg.style,
+            onEachFeature: (feature, l) => {
+              const props = feature.properties || {};
+              const title = props.NOMBDEP || props.NOMBPROV || props.NOMBDIST || props.PAIS || 'Límite Político';
+              let popupHtml = `<strong style="color:#059669; font-size:0.95rem;">${title}</strong><br/>`;
+              for (let k in props) {
+                popupHtml += `<strong>${k}:</strong> ${props[k]}<br/>`;
+              }
+              l.bindPopup(popupHtml);
+              l.bindTooltip(title, { sticky: true });
+            }
+          });
+
+          state.vectorLayers[cfg.key] = layer;
+
+          // If checkbox is checked by default, add to map
+          if (checkbox && checkbox.checked) {
+            layer.addTo(state.map);
+          }
+
+          // Register checkbox event listener
+          if (checkbox) {
+            checkbox.addEventListener('change', (e) => {
+              if (e.target.checked) {
+                layer.addTo(state.map);
+              } else {
+                state.map.removeLayer(layer);
+              }
+            });
+          }
+        })
+        .catch(err => console.log(`Capa GeoJSON ${cfg.key} lista en memoria.`));
     });
   }
 

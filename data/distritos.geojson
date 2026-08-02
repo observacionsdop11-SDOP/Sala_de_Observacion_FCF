@@ -1,0 +1,11 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "NOMBDIST": "CALLERIA", "NOMBPROV": "CORONEL PORTILLO", "NOMBDEP": "UCAYALI", "FOCOS_ACTIVOS": 42 }, "geometry": { "type": "Polygon", "coordinates": [[[-74.8, -8.1], [-74.2, -8.2], [-74.4, -8.6], [-74.9, -8.5], [-74.8, -8.1]]] } },
+    { "type": "Feature", "properties": { "NOMBDIST": "YARINACOCHA", "NOMBPROV": "CORONEL PORTILLO", "NOMBDEP": "UCAYALI", "FOCOS_ACTIVOS": 18 }, "geometry": { "type": "Polygon", "coordinates": [[[-74.6, -8.3], [-74.4, -8.3], [-74.5, -8.45], [-74.65, -8.4], [-74.6, -8.3]]] } },
+    { "type": "Feature", "properties": { "NOMBDIST": "TAMBOPATA", "NOMBPROV": "TAMBOPATA", "NOMBDEP": "MADRE DE DIOS", "FOCOS_ACTIVOS": 35 }, "geometry": { "type": "Polygon", "coordinates": [[[-69.4, -12.4], [-69.0, -12.5], [-69.1, -12.8], [-69.5, -12.7], [-69.4, -12.4]]] } },
+    { "type": "Feature", "properties": { "NOMBDIST": "INAMBARI", "NOMBPROV": "TAMBOPATA", "NOMBDEP": "MADRE DE DIOS", "FOCOS_ACTIVOS": 29 }, "geometry": { "type": "Polygon", "coordinates": [[[-70.2, -12.8], [-69.6, -12.8], [-69.7, -13.2], [-70.3, -13.1], [-70.2, -12.8]]] } },
+    { "type": "Feature", "properties": { "NOMBDIST": "BELEN", "NOMBPROV": "MAYNAS", "NOMBDEP": "LORETO", "FOCOS_ACTIVOS": 12 }, "geometry": { "type": "Polygon", "coordinates": [[[-73.3, -3.7], [-73.2, -3.7], [-73.2, -3.8], [-73.3, -3.8], [-73.3, -3.7]]] } },
+    { "type": "Feature", "properties": { "NOMBDIST": "RUPA RUPA", "NOMBPROV": "LEONCIO PRADO", "NOMBDEP": "HUANUCO", "FOCOS_ACTIVOS": 24 }, "geometry": { "type": "Polygon", "coordinates": [[[-76.1, -9.2], [-75.9, -9.2], [-76.0, -9.4], [-76.2, -9.3], [-76.1, -9.2]]] } }
+  ]
+}

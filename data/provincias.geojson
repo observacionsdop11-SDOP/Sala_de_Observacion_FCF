@@ -1,0 +1,13 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "NOMBPROV": "CORONEL PORTILLO", "NOMBDEP": "UCAYALI", "CRITICO": "SI", "CAPITAL": "Pucallpa" }, "geometry": { "type": "Polygon", "coordinates": [[[-75.2, -7.8], [-73.8, -8.4], [-74.0, -9.8], [-75.4, -9.2], [-75.2, -7.8]]] } },
+    { "type": "Feature", "properties": { "NOMBPROV": "MAYNAS", "NOMBDEP": "LORETO", "CRITICO": "SI", "CAPITAL": "Iquitos" }, "geometry": { "type": "Polygon", "coordinates": [[[-74.5, -2.5], [-72.8, -2.5], [-72.8, -4.5], [-74.5, -4.5], [-74.5, -2.5]]] } },
+    { "type": "Feature", "properties": { "NOMBPROV": "TAMBOPATA", "NOMBDEP": "MADRE DE DIOS", "CRITICO": "SI", "CAPITAL": "Puerto Maldonado" }, "geometry": { "type": "Polygon", "coordinates": [[[-70.5, -11.8], [-68.8, -12.2], [-69.2, -13.5], [-70.8, -13.0], [-70.5, -11.8]]] } },
+    { "type": "Feature", "properties": { "NOMBPROV": "SAN MARTIN", "NOMBDEP": "SAN MARTIN", "CRITICO": "SI", "CAPITAL": "Tarapoto" }, "geometry": { "type": "Polygon", "coordinates": [[[-76.5, -6.2], [-75.8, -6.4], [-76.0, -7.0], [-76.8, -6.8], [-76.5, -6.2]]] } },
+    { "type": "Feature", "properties": { "NOMBPROV": "HUANUCO", "NOMBDEP": "HUANUCO", "CRITICO": "SI", "CAPITAL": "Huánuco" }, "geometry": { "type": "Polygon", "coordinates": [[[-76.5, -9.5], [-75.8, -9.6], [-76.0, -10.2], [-76.6, -10.0], [-76.5, -9.5]]] } },
+    { "type": "Feature", "properties": { "NOMBPROV": "OXAPAMPA", "NOMBDEP": "PASCO", "CRITICO": "SI", "CAPITAL": "Oxapampa" }, "geometry": { "type": "Polygon", "coordinates": [[[-75.8, -9.8], [-74.8, -9.8], [-75.0, -10.8], [-75.8, -10.8], [-75.8, -9.8]]] } },
+    { "type": "Feature", "properties": { "NOMBPROV": "CHANCHAMAYO", "NOMBDEP": "JUNIN", "CRITICO": "SI", "CAPITAL": "La Merced" }, "geometry": { "type": "Polygon", "coordinates": [[[-75.6, -10.8], [-74.8, -10.8], [-75.0, -11.5], [-75.7, -11.4], [-75.6, -10.8]]] } },
+    { "type": "Feature", "properties": { "NOMBPROV": "LIMA", "NOMBDEP": "LIMA", "CRITICO": "NO", "CAPITAL": "Lima" }, "geometry": { "type": "Polygon", "coordinates": [[[-77.2, -11.7], [-76.7, -11.7], [-76.7, -12.4], [-77.2, -12.4], [-77.2, -11.7]]] } }
+  ]
+}

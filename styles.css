@@ -432,6 +432,33 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
 }
 
+.layer-checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.layer-checkbox-option:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.layer-checkbox-option input[type="checkbox"] {
+  accent-color: var(--emerald-primary);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
 /* Quick Tools Stack */
 .tools-btn-stack {
   display: flex;
