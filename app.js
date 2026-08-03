@@ -900,10 +900,22 @@ document.addEventListener('DOMContentLoaded', () => {
   function openModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.add('active');
+    if (id === 'modal-video') {
+      const iframe = document.getElementById('video-iframe');
+      if (iframe) {
+        iframe.src = "https://www.youtube.com/embed/55yFDzljq-E?autoplay=1&rel=0&modestbranding=1";
+      }
+    }
   }
 
   function closeModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.remove('active');
+    if (id === 'modal-video') {
+      const iframe = document.getElementById('video-iframe');
+      if (iframe) {
+        iframe.src = "";
+      }
+    }
   }
 });
