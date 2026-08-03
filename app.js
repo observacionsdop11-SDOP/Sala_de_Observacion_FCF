@@ -441,7 +441,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function handleImportedFiles(files) {
-    Array.from(files).forEach(file => {
+    const fileList = Array.from(files);
+
+    // Support individual shapefile components (.shp, .dbf, .prj, .shx)
+    const shpFile = fileList.find(f => f.name.toLowerCase().endsWith('.shp'));
+    const dbfFile = fileList.find(f => f.name.toLowerCase().endsWith('.dbf'));
+    const prjFile = fileList.find(f => f.name.toLowerCase().endsWith('.prj'));
+
+    if (shpFile && typeof shp !== 'undefined') {
+      const promises = [shpFile.arrayBuffer()];
+      if (dbfFile) promises.push(dbfFile.arrayBuffer());
+      if (prjFile) promises.push(prjFile.text());
+
+      Promise.all(promises).then(buffers => {
+        try {
+          const parsedGeom = shp.parseShp(buffers[0], buffers[2] || null);
+          let properties = [];
+          if (buffers[1]) {
+            properties = shp.parseDbf(buffers[1]);
+          }
+          const features = parsedGeom.map((g, idx) => ({
+            type: "Feature",
+            geometry: g,
+            properties: properties[idx] || {}
+          }));
+          addGeoJSONToMap({ type: "FeatureCollection", features: features }, shpFile.name);
+        } catch(err) {
+          alert(`Error al procesar Shapefile (.shp/.dbf): ${err.message}`);
+        }
+      }).catch(err => alert(`Error al leer componentes Shapefile: ${err.message}`));
+      closeModal('modal-import');
+      return;
+    }
+
+    fileList.forEach(file => {
       const name = file.name.toLowerCase();
 
       if (name.endsWith('.geojson') || name.endsWith('.json')) {
@@ -454,8 +487,6 @@ document.addEventListener('DOMContentLoaded', () => {
         parseExcelFile(file);
       } else if (name.endsWith('.tif') || name.endsWith('.tiff')) {
         parseGeoTIFFFile(file);
-      } else {
-        alert(`Formato no soportado: ${file.name}`);
       }
     });
 

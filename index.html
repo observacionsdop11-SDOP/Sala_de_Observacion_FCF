@@ -480,15 +480,15 @@
     </article>
   </div>
 
-  <!-- MODAL: Importador de Datos GIS Drag & Drop -->
+  <!-- MODAL: Importador de Datos GIS Estilo Google Earth Engine -->
   <div class="modal-overlay" id="modal-import">
-    <article class="modal-card" style="max-width: 600px;">
+    <article class="modal-card" style="max-width: 680px;">
       <header class="modal-header">
         <div class="modal-title-group">
-          <div class="modal-title-icon">
+          <div class="modal-title-icon" style="color: var(--emerald-primary); background: rgba(0, 240, 255, 0.15); border-color: rgba(0, 240, 255, 0.3);">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
-          <h2 class="modal-title">Importar Archivos GIS</h2>
+          <h2 class="modal-title">Importador de Datos GIS & Capas Satelitales (Estilo GEE)</h2>
         </div>
         <button class="btn-close-modal" data-close="modal-import">
           <i class="fa-solid fa-xmark"></i>
@@ -496,17 +496,28 @@
       </header>
       <div class="modal-body">
         <div class="dropzone-container" id="dropzone">
-          <i class="fa-solid fa-file-circle-plus dropzone-icon"></i>
-          <span class="dropzone-text">Arrastra y suelta tus archivos aquí</span>
-          <span class="dropzone-subtext">o haz clic para examinar desde tu equipo</span>
-          <input type="file" id="file-input" accept=".zip,.json,.geojson,.tif,.tiff,.csv,.xlsx" style="display: none;" multiple />
+          <i class="fa-solid fa-file-circle-plus dropzone-icon" style="color: var(--emerald-primary);"></i>
+          <span class="dropzone-text">Arrastra y suelta tus archivos GIS o imágenes satelitales aquí</span>
+          <span class="dropzone-subtext">Soporta componentes Shapefile (.shp, .shx, .dbf, .prj), .zip, GeoTIFF, CSV, Excel</span>
+          <input type="file" id="file-input" accept=".shp,.shx,.dbf,.prj,.zip,.json,.geojson,.tif,.tiff,.tfrecord,.csv,.xlsx" style="display: none;" multiple />
 
-          <div class="supported-formats-pills">
-            <span class="format-badge">Shapefile (.zip)</span>
-            <span class="format-badge">GeoJSON (.geojson)</span>
-            <span class="format-badge">GeoTIFF (.tif)</span>
-            <span class="format-badge">CSV (.csv)</span>
-            <span class="format-badge">Excel (.xlsx)</span>
+          <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; text-align: left;">
+            <div style="background: rgba(6, 11, 23, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 240, 255, 0.15);">
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--emerald-primary); display: block; margin-bottom: 4px;">
+                <i class="fa-solid fa-image"></i> Image Upload (Satelital)
+              </span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">
+                GeoTIFF (.tif, .tiff), TFRecord (.tfrecord + .json)
+              </span>
+            </div>
+            <div style="background: rgba(6, 11, 23, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 240, 255, 0.15);">
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--emerald-light); display: block; margin-bottom: 4px;">
+                <i class="fa-solid fa-table"></i> Table Upload (Vectores)
+              </span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">
+                Shape files (.shp, .shx, .dbf, .prj, or .zip), CSV, Excel
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -611,7 +622,7 @@
 
   <!-- MODAL: Video Institucional & Demostración SDOP -->
   <div class="modal-overlay" id="modal-video">
-    <article class="modal-card" style="max-width: 900px;">
+    <article class="modal-card" style="max-width: 920px;">
       <header class="modal-header">
         <div class="modal-title-group">
           <div class="modal-title-icon" style="color: var(--fire-amber); background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
@@ -624,17 +635,19 @@
         </button>
       </header>
       <div class="modal-body">
-        <div class="video-player-container">
-          <div class="video-poster-wrapper" id="video-trigger">
-            <img src="assets/gallery/sdop_video_thumb.jpg" alt="Video Institucional SDOP UNALM" />
-            <div class="video-play-btn-overlay">
-              <i class="fa-solid fa-play" style="margin-left: 4px;"></i>
-            </div>
-          </div>
+        <div class="video-player-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000;">
+          <iframe 
+            id="video-iframe"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+            src="https://www.youtube-nocookie.com/embed/5qap5aO4i9A?autoplay=0&rel=0&modestbranding=1" 
+            title="Video Institucional SDOP UNALM MapBiomas Fuego" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
         </div>
 
         <div class="video-info-box">
-          <h3 style="font-size: 1rem; color: var(--emerald-light); margin-bottom: 6px;">
+          <h3 style="font-size: 1rem; color: var(--emerald-primary); margin-bottom: 6px;">
             <i class="fa-solid fa-satellite-dish"></i> Monitoreo Geoespacial de Incendios Forestales & Biomasa en Perú
           </h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
