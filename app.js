@@ -236,6 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           state.vectorLayers[cfg.key] = layer;
+          state.vectorDataRaw = state.vectorDataRaw || {};
+          state.vectorDataRaw[cfg.key] = data;
 
           if (checkbox && checkbox.checked) {
             layer.addTo(state.map);
@@ -840,11 +842,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof shpwrite !== 'undefined' && typeof shpwrite.download === 'function') {
       try {
         for (const key of activeKeys) {
-          const layer = state.vectorLayers[key];
-          if (layer) {
-            const geojson = layer.toGeoJSON();
-            shpwrite.download(geojson, { folder: `sdop_fcf_${key}_shapefile`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
-          }
+          const rawData = (state.vectorDataRaw && state.vectorDataRaw[key]) 
+            ? state.vectorDataRaw[key] 
+            : state.vectorLayers[key].toGeoJSON();
+          shpwrite.download(rawData, { folder: `sdop_fcf_${key}_shapefile`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
         }
 
         if (hasDrawnFeatures) {
@@ -871,11 +872,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof JSZip !== 'undefined') {
       const zip = new JSZip();
       for (const key of activeKeys) {
-        const layer = state.vectorLayers[key];
-        if (layer) {
-          const geojson = layer.toGeoJSON();
-          zip.file(`${key.toUpperCase()}_SDOP_FCF.geojson`, JSON.stringify(geojson, null, 2));
-        }
+        const rawData = (state.vectorDataRaw && state.vectorDataRaw[key]) 
+          ? state.vectorDataRaw[key] 
+          : state.vectorLayers[key].toGeoJSON();
+        zip.file(`${key.toUpperCase()}_SDOP_FCF.geojson`, JSON.stringify(rawData, null, 2));
       }
 
       if (hasDrawnFeatures) {
@@ -897,12 +897,11 @@ document.addEventListener('DOMContentLoaded', () => {
       triggerDownload(content, `sdop_fcf_capas_gis_export_${Date.now()}.zip`);
     } else {
       activeKeys.forEach(key => {
-        const layer = state.vectorLayers[key];
-        if (layer) {
-          const geojson = layer.toGeoJSON();
-          const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
-          triggerDownload(blob, `sdop_fcf_${key}_${Date.now()}.geojson`);
-        }
+        const rawData = (state.vectorDataRaw && state.vectorDataRaw[key]) 
+          ? state.vectorDataRaw[key] 
+          : state.vectorLayers[key].toGeoJSON();
+        const blob = new Blob([JSON.stringify(rawData, null, 2)], { type: 'application/json' });
+        triggerDownload(blob, `sdop_fcf_${key}_${Date.now()}.geojson`);
       });
     }
   }
