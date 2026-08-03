@@ -106,12 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Invalidate map size to fix blank/black container issues on initial load
     const refreshMapSize = () => {
       if (state.map) {
-        state.map.invalidateSize();
+        state.map.invalidateSize(true);
+        state.map.setView([-9.1900, -75.0150], 6, { animate: false });
       }
     };
 
-    [50, 150, 300, 600, 1200, 2500].forEach(delay => setTimeout(refreshMapSize, delay));
+    [0, 50, 150, 300, 600, 1200, 2500].forEach(delay => setTimeout(refreshMapSize, delay));
     window.addEventListener('resize', refreshMapSize);
+    window.addEventListener('DOMContentLoaded', refreshMapSize);
     window.addEventListener('load', refreshMapSize);
   }
 
