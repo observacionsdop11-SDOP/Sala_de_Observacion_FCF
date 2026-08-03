@@ -810,11 +810,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAbout = document.getElementById('btn-about');
     const btnMethodology = document.getElementById('btn-methodology');
     const btnGallery = document.getElementById('btn-gallery');
+    const btnVideo = document.getElementById('btn-video');
     const btnImport = document.getElementById('btn-import');
 
     if (btnAbout) btnAbout.addEventListener('click', () => openModal('modal-about'));
     if (btnMethodology) btnMethodology.addEventListener('click', () => openModal('modal-methodology'));
     if (btnGallery) btnGallery.addEventListener('click', () => openModal('modal-gallery'));
+    if (btnVideo) btnVideo.addEventListener('click', () => openModal('modal-video'));
     if (btnImport) btnImport.addEventListener('click', () => openModal('modal-import'));
 
     // Lightbox handlers

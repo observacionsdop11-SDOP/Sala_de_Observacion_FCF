@@ -94,6 +94,10 @@
         <i class="fa-solid fa-images"></i>
         <span>Galería SDOP</span>
       </button>
+      <button class="btn-header" id="btn-video">
+        <i class="fa-solid fa-circle-play"></i>
+        <span>Video SDOP</span>
+      </button>
       <button class="btn-header btn-header-accent" id="btn-import">
         <i class="fa-solid fa-file-import"></i>
         <span>Importar Datos</span>
@@ -588,6 +592,54 @@
               <p class="gallery-desc">Expedición de campo y validación de biomasa forestal en montaña en el Distrito de San Ramón.</p>
             </div>
           </article>
+
+          <!-- Photo 6 -->
+          <article class="gallery-card" data-full="assets/gallery/sdop_galeria_6.jpg" data-caption="Análisis Espectral de Cicatrices de Fuego (NBR 30m) & Cobertura Amazónica">
+            <div class="gallery-img-wrapper">
+              <img src="assets/gallery/sdop_galeria_6.jpg" alt="Análisis Espectral NBR Satélite SDOP" loading="lazy" />
+            </div>
+            <div class="gallery-card-body">
+              <span class="gallery-badge">Satelital NBR</span>
+              <h3 class="gallery-title">MapBiomas Fuego NBR</h3>
+              <p class="gallery-desc">Procesamiento espectral de reflectancia para la identificación de quemaduras en la cobertura vegetal.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- MODAL: Video Institucional & Demostración SDOP -->
+  <div class="modal-overlay" id="modal-video">
+    <article class="modal-card" style="max-width: 900px;">
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-title-icon" style="color: var(--fire-amber); background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
+            <i class="fa-solid fa-film"></i>
+          </div>
+          <h2 class="modal-title">Video Institucional — Sala de Observación SDOP UNALM</h2>
+        </div>
+        <button class="btn-close-modal" data-close="modal-video">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+      <div class="modal-body">
+        <div class="video-player-container">
+          <div class="video-poster-wrapper" id="video-trigger">
+            <img src="assets/gallery/sdop_video_thumb.jpg" alt="Video Institucional SDOP UNALM" />
+            <div class="video-play-btn-overlay">
+              <i class="fa-solid fa-play" style="margin-left: 4px;"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="video-info-box">
+          <h3 style="font-size: 1rem; color: var(--emerald-light); margin-bottom: 6px;">
+            <i class="fa-solid fa-satellite-dish"></i> Monitoreo Geoespacial de Incendios Forestales & Biomasa en Perú
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            Presentación técnica del rol de la Sala de Observación FCF — UNALM en la iniciativa MapBiomas Fuego Perú, integración de series temporales Landsat y Sentinel, y redes neuronales profundas para la protección de la biodiversidad amazónica.
+          </p>
         </div>
       </div>
     </article>
