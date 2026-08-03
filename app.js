@@ -104,13 +104,15 @@ document.addEventListener('DOMContentLoaded', () => {
     state.map.addLayer(state.drawnItems);
 
     // Invalidate map size to fix blank/black container issues on initial load
-    setTimeout(() => {
-      if (state.map) state.map.invalidateSize();
-    }, 200);
+    const refreshMapSize = () => {
+      if (state.map) {
+        state.map.invalidateSize();
+      }
+    };
 
-    window.addEventListener('resize', () => {
-      if (state.map) state.map.invalidateSize();
-    });
+    [50, 150, 300, 600, 1200, 2500].forEach(delay => setTimeout(refreshMapSize, delay));
+    window.addEventListener('resize', refreshMapSize);
+    window.addEventListener('load', refreshMapSize);
   }
 
   /* ==========================================================================
