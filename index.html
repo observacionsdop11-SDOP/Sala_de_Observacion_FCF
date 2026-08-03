@@ -111,6 +111,10 @@
         <i class="fa-solid fa-file-import"></i>
         <span>Importar Datos</span>
       </button>
+      <button class="btn-header btn-header-export" id="btn-export-header">
+        <i class="fa-solid fa-file-export"></i>
+        <span>Exportar Shapefile (.zip)</span>
+      </button>
     </div>
   </header>
 
@@ -765,6 +769,9 @@
 
   <!-- SheetJS / XLSX for Excel reading/writing -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- shp-write for client-side shapefile zip generation -->
+  <script src="https://unpkg.com/shp-write@latest/shpwrite.js"></script>
 
   <!-- Main App Script -->
   <script src="app.js"></script>

@@ -811,6 +811,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function exportToShapefileZip() {
+    if (state.featuresList.length === 0) {
+      const activeKeys = Object.keys(state.vectorLayers).filter(k => {
+        const chk = document.getElementById(`chk-${k}`);
+        return chk && chk.checked;
+      });
+
+      if (activeKeys.length > 0) {
+        const activeKey = activeKeys[0];
+        const layer = state.vectorLayers[activeKey];
+        if (layer) {
+          const featureCollection = layer.toGeoJSON();
+          if (typeof shpwrite !== 'undefined' && typeof shpwrite.download === 'function') {
+            shpwrite.download(featureCollection, { folder: `sdop_fcf_${activeKey}_shapefile`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
+          } else {
+            const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sdop_fcf_${activeKey}_${Date.now()}.geojson`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }
+          return;
+        }
+      }
+
+      alert('No hay entidades en el mapa para exportar. Dibuja un polígono o activa una capa vectorial (ej. Departamentos/Provincias).');
+      return;
+    }
+
+    const featureCollection = {
+      type: "FeatureCollection",
+      features: state.featuresList.map(f => {
+        const geoJson = f.leafletLayer.toGeoJSON();
+        geoJson.properties = geoJson.properties || {};
+        geoJson.properties.name = f.name;
+        geoJson.properties.areaHa = f.areaHa;
+        geoJson.properties.perimeterKm = f.perimeterKm;
+        return geoJson;
+      })
+    };
+
+    if (typeof shpwrite !== 'undefined' && typeof shpwrite.download === 'function') {
+      shpwrite.download(featureCollection, { folder: `sdop_fcf_entidades_${Date.now()}`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
+    } else {
+      exportToGeoJSON();
+    }
+  }
+
   function exportToGeoJSON() {
     if (state.featuresList.length === 0) {
       alert('No hay datos para exportar.');
@@ -872,12 +922,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnGallery = document.getElementById('btn-gallery');
     const btnVideo = document.getElementById('btn-video');
     const btnImport = document.getElementById('btn-import');
+    const btnExportHeader = document.getElementById('btn-export-header');
 
     if (btnAbout) btnAbout.addEventListener('click', () => openModal('modal-about'));
     if (btnMethodology) btnMethodology.addEventListener('click', () => openModal('modal-methodology'));
     if (btnGallery) btnGallery.addEventListener('click', () => openModal('modal-gallery'));
     if (btnVideo) btnVideo.addEventListener('click', () => openModal('modal-video'));
     if (btnImport) btnImport.addEventListener('click', () => openModal('modal-import'));
+    if (btnExportHeader) btnExportHeader.addEventListener('click', exportToShapefileZip);
 
     // Toggle KPI Floating Panel
     const btnToggleKpi = document.getElementById('btn-toggle-kpi');
