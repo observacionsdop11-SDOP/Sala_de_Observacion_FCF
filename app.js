@@ -88,8 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
       })
     };
 
-    // Default base layer: Google Satellite
-    state.activeBaseLayer = state.baseLayers['google-satellite'];
+    // Default base layer: ESRI Satellite (Centrado en Perú)
+    state.activeBaseLayer = state.baseLayers['esri-satellite'];
     state.activeBaseLayer.addTo(state.map);
 
     // Leaflet Native Scale Control
