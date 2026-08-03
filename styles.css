@@ -237,7 +237,7 @@ h1, h2, h3, h4, h5, h6 {
 .kpi-floating-panel {
   position: absolute;
   top: 16px;
-  left: 16px;
+  left: 60px;
   z-index: 500;
   pointer-events: auto;
   display: flex;
