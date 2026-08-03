@@ -217,10 +217,18 @@ document.addEventListener('DOMContentLoaded', () => {
             style: cfg.style,
             onEachFeature: (feature, l) => {
               const props = feature.properties || {};
-              const title = props.NOMBDEP || props.NOMBPROV || props.NOMBDIST || props.PAIS || 'Límite Político';
-              let popupHtml = `<strong style="color:#059669; font-size:0.95rem;">${title}</strong><br/>`;
+              const title = props.DISTRITO || props.PROVINCIA || props.DEPARTAMEN || props.NOMBDEP || props.NOMBPROV || props.NOMBDIST || props.PAIS || 'Límite Político';
+              let popupHtml = `<strong style="color:#00f0ff; font-size:0.95rem;">${title}</strong><br/>`;
+              if (props.PROVINCIA && props.DISTRITO) {
+                popupHtml += `<strong>Provincia:</strong> ${props.PROVINCIA}<br/>`;
+              }
+              if (props.DEPARTAMEN) {
+                popupHtml += `<strong>Departamento:</strong> ${props.DEPARTAMEN}<br/>`;
+              }
               for (let k in props) {
-                popupHtml += `<strong>${k}:</strong> ${props[k]}<br/>`;
+                if (!['DISTRITO', 'PROVINCIA', 'DEPARTAMEN', 'NOMBDEP', 'OBJECTID', 'OBJECTID_1'].includes(k)) {
+                  popupHtml += `<strong>${k}:</strong> ${props[k]}<br/>`;
+                }
               }
               l.bindPopup(popupHtml);
               l.bindTooltip(title, { sticky: true });
