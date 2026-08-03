@@ -102,6 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // FeatureGroup for Drawn Elements
     state.drawnItems = new L.FeatureGroup();
     state.map.addLayer(state.drawnItems);
+
+    // Invalidate map size to fix blank/black container issues on initial load
+    setTimeout(() => {
+      if (state.map) state.map.invalidateSize();
+    }, 200);
+
+    window.addEventListener('resize', () => {
+      if (state.map) state.map.invalidateSize();
+    });
   }
 
   /* ==========================================================================
@@ -168,18 +177,20 @@ document.addEventListener('DOMContentLoaded', () => {
     state.vectorLayers = {};
 
     const configs = [
-      { id: 'chk-sudamerica', key: 'sudamerica', url: 'data/sudamerica.geojson', style: { color: '#64748b', weight: 1.5, fillOpacity: 0.05, dashArray: '4, 4' } },
-      { id: 'chk-departamentos', key: 'departamentos', url: 'data/departamentos.geojson', style: { color: '#10b981', weight: 2, fillOpacity: 0.15 } },
-      { id: 'chk-provincias', key: 'provincias', url: 'data/provincias.geojson', style: { color: '#f59e0b', weight: 1.8, fillOpacity: 0.1, dashArray: '3, 3' } },
-      { id: 'chk-distritos', key: 'distritos', url: 'data/distritos.geojson', style: { color: '#ef4444', weight: 1.5, fillOpacity: 0.2 } }
+      { id: 'chk-sudamerica', key: 'sudamerica', url: './data/sudamerica.geojson', style: { color: '#64748b', weight: 1.5, fillOpacity: 0.05, dashArray: '4, 4' } },
+      { id: 'chk-departamentos', key: 'departamentos', url: './data/departamentos.geojson', style: { color: '#10b981', weight: 2, fillOpacity: 0.15 } },
+      { id: 'chk-provincias', key: 'provincias', url: './data/provincias.geojson', style: { color: '#f59e0b', weight: 1.8, fillOpacity: 0.1, dashArray: '3, 3' } },
+      { id: 'chk-distritos', key: 'distritos', url: './data/distritos.geojson', style: { color: '#ef4444', weight: 1.5, fillOpacity: 0.2 } }
     ];
 
     configs.forEach(cfg => {
       const checkbox = document.getElementById(cfg.id);
       
-      // Fetch GeoJSON file
       fetch(cfg.url)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then(data => {
           const layer = L.geoJSON(data, {
             style: cfg.style,
@@ -197,12 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
           state.vectorLayers[cfg.key] = layer;
 
-          // If checkbox is checked by default, add to map
           if (checkbox && checkbox.checked) {
             layer.addTo(state.map);
           }
 
-          // Register checkbox event listener
           if (checkbox) {
             checkbox.addEventListener('change', (e) => {
               if (e.target.checked) {
@@ -213,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
           }
         })
-        .catch(err => console.log(`Capa GeoJSON ${cfg.key} lista en memoria.`));
+        .catch(err => console.log(`Capa GeoJSON ${cfg.key}:`, err));
     });
   }
 
