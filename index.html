@@ -120,52 +120,58 @@
     <div class="map-view-wrapper">
       <div id="map"></div>
 
-      <!-- Top Floating Animated KPIs Panel -->
-      <section class="kpi-floating-panel" aria-label="Indicadores Clave">
-        <!-- KPI 1: Cobertura Regional -->
-        <article class="kpi-card">
-          <div class="kpi-icon-wrapper">
-            <i class="fa-solid fa-map-location-dot"></i>
-          </div>
-          <div class="kpi-content">
-            <span class="kpi-title">Cobertura Regional</span>
-            <div class="kpi-number-container">
-              <span class="kpi-number" id="kpi-regiones" data-target="10">0</span>
-              <span class="kpi-unit">Regiones</span>
-            </div>
-            <p class="kpi-subtext">Costa, Andes y Amazonía Alta/Baja N-C-S</p>
-          </div>
-        </article>
+      <!-- Top Floating KPIs Panel -->
+      <section class="kpi-floating-panel collapsed" id="kpi-floating-panel">
+        <button class="kpi-toggle-btn" id="btn-toggle-kpi" title="Mostrar/Ocultar Indicadores">
+          <i class="fa-solid fa-chart-simple"></i> Indicadores SDOP <i class="fa-solid fa-chevron-down" id="kpi-chevron"></i>
+        </button>
 
-        <!-- KPI 2: Focos de Calor & Cobertura -->
-        <article class="kpi-card kpi-fire">
-          <div class="kpi-icon-wrapper">
-            <i class="fa-solid fa-fire-burn"></i>
-          </div>
-          <div class="kpi-content">
-            <span class="kpi-title">MapBiomas Fuego Perú</span>
-            <div class="kpi-number-container">
-              <span class="kpi-number" id="kpi-focos" data-target="86450">0</span>
-              <span class="kpi-unit">Detecciones</span>
+        <div class="kpi-card-list">
+          <!-- KPI 1: Cobertura Regional -->
+          <article class="kpi-card">
+            <div class="kpi-icon-wrapper">
+              <i class="fa-solid fa-map-location-dot"></i>
             </div>
-            <p class="kpi-subtext">Col 01 (2013-2024) | Col 02 (1990-2025 en proceso)</p>
-          </div>
-        </article>
+            <div class="kpi-content">
+              <span class="kpi-title">Cobertura Regional</span>
+              <div class="kpi-number-container">
+                <span class="kpi-number" id="kpi-regiones" data-target="10">0</span>
+                <span class="kpi-unit">Regiones</span>
+              </div>
+              <p class="kpi-subtext">Costa, Andes y Amazonía Alta/Baja N-C-S</p>
+            </div>
+          </article>
 
-        <!-- KPI 3: Departamentos Críticos -->
-        <article class="kpi-card kpi-depts">
-          <div class="kpi-icon-wrapper">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-          </div>
-          <div class="kpi-content">
-            <span class="kpi-title">Deptos. Críticos</span>
-            <div class="kpi-number-container">
-              <span class="kpi-number" id="kpi-depts" data-target="5">0</span>
-              <span class="kpi-unit">Monitoreados</span>
+          <!-- KPI 2: Focos de Calor & Cobertura -->
+          <article class="kpi-card kpi-fire">
+            <div class="kpi-icon-wrapper">
+              <i class="fa-solid fa-fire-burn"></i>
             </div>
-            <p class="kpi-subtext">Ucayali, Madre de Dios, Huánuco, San Martín, Loreto</p>
-          </div>
-        </article>
+            <div class="kpi-content">
+              <span class="kpi-title">MapBiomas Fuego Perú</span>
+              <div class="kpi-number-container">
+                <span class="kpi-number" id="kpi-focos" data-target="86450">0</span>
+                <span class="kpi-unit">Detecciones</span>
+              </div>
+              <p class="kpi-subtext">Col 01 (2013-2024) | Col 02 (1990-2025 en proceso)</p>
+            </div>
+          </article>
+
+          <!-- KPI 3: Departamentos Críticos -->
+          <article class="kpi-card kpi-depts">
+            <div class="kpi-icon-wrapper">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-title">Deptos. Críticos</span>
+              <div class="kpi-number-container">
+                <span class="kpi-number" id="kpi-depts" data-target="5">0</span>
+                <span class="kpi-unit">Monitoreados</span>
+              </div>
+              <p class="kpi-subtext">Ucayali, Madre de Dios, Huánuco, San Martín, Loreto</p>
+            </div>
+          </article>
+        </div>
       </section>
 
       <!-- Floating GIS Controls Panel (Right Side) -->

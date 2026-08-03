@@ -871,6 +871,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnVideo) btnVideo.addEventListener('click', () => openModal('modal-video'));
     if (btnImport) btnImport.addEventListener('click', () => openModal('modal-import'));
 
+    // Toggle KPI Floating Panel
+    const btnToggleKpi = document.getElementById('btn-toggle-kpi');
+    const kpiPanel = document.getElementById('kpi-floating-panel');
+    if (btnToggleKpi && kpiPanel) {
+      btnToggleKpi.addEventListener('click', () => {
+        kpiPanel.classList.toggle('collapsed');
+      });
+    }
+
     // Lightbox handlers
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');

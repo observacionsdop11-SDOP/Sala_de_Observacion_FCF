@@ -238,13 +238,41 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   top: 16px;
   left: 16px;
-  right: 16px;
   z-index: 500;
-  pointer-events: none;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 900px;
+  transition: all 0.3s ease;
+}
+
+.kpi-toggle-btn {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  color: var(--emerald-light);
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  box-shadow: var(--shadow-main);
+}
+
+.kpi-card-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 14px;
-  max-width: 1100px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.kpi-floating-panel.collapsed .kpi-card-list {
+  display: none;
 }
 
 .kpi-card {
@@ -254,10 +282,12 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
-  padding: 14px 18px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  box-shadow: var(--shadow-main);
+}
   box-shadow: var(--shadow-main);
   transition: var(--transition-normal);
   position: relative;
@@ -364,15 +394,16 @@ h1, h2, h3, h4, h5, h6 {
 /* GIS Toolbar & Control Panels Floating Right */
 .gis-floating-controls {
   position: absolute;
-  top: 80px;
+  top: 16px;
   right: 16px;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 80px);
   z-index: 500;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   overflow-y: auto;
   padding-right: 4px;
+  width: 235px;
 }
 
 .gis-floating-controls::-webkit-scrollbar {
@@ -389,9 +420,9 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
-  padding: 12px;
+  padding: 10px;
   box-shadow: var(--shadow-main);
-  width: 250px;
+  width: 100%;
 }
 
 .control-card-header {
