@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         maxZoom: 19,
         attribution: '&copy; Esri World Imagery'
       }),
+      'esri-topo': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: '&copy; Esri World Topo Map | SERFOR'
+      }),
       'google-satellite': L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -91,6 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default base layer: ESRI Satellite (Centrado en Perú)
     state.activeBaseLayer = state.baseLayers['esri-satellite'];
     state.activeBaseLayer.addTo(state.map);
+
+    // Automatic Tile Error Handling (Failover to OSM)
+    Object.keys(state.baseLayers).forEach(key => {
+      state.baseLayers[key].on('tileerror', function() {
+        console.warn(`Error en baldosa ${key}, conmutando a OpenStreetMap`);
+        if (state.map && state.map.hasLayer(state.baseLayers[key]) && key !== 'osm') {
+          state.map.removeLayer(state.baseLayers[key]);
+          state.baseLayers['osm'].addTo(state.map);
+          state.activeBaseLayer = state.baseLayers['osm'];
+        }
+      });
+    });
 
     // Leaflet Native Scale Control
     state.scaleControl = L.control.scale({
