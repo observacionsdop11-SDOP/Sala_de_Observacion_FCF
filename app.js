@@ -811,53 +811,99 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function exportToShapefileZip() {
-    if (state.featuresList.length === 0) {
-      const activeKeys = Object.keys(state.vectorLayers).filter(k => {
-        const chk = document.getElementById(`chk-${k}`);
-        return chk && chk.checked;
-      });
+  async function exportToShapefileZip() {
+    // 1. Gather all active vector layers
+    const activeKeys = Object.keys(state.vectorLayers).filter(k => {
+      const chk = document.getElementById(`chk-${k}`);
+      return chk && chk.checked;
+    });
 
-      if (activeKeys.length > 0) {
-        const activeKey = activeKeys[0];
-        const layer = state.vectorLayers[activeKey];
-        if (layer) {
-          const featureCollection = layer.toGeoJSON();
-          if (typeof shpwrite !== 'undefined' && typeof shpwrite.download === 'function') {
-            shpwrite.download(featureCollection, { folder: `sdop_fcf_${activeKey}_shapefile`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
-          } else {
-            const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `sdop_fcf_${activeKey}_${Date.now()}.geojson`;
-            a.click();
-            URL.revokeObjectURL(url);
-          }
-          return;
-        }
-      }
+    const hasDrawnFeatures = state.featuresList.length > 0;
 
-      alert('No hay entidades en el mapa para exportar. Dibuja un polígono o activa una capa vectorial (ej. Departamentos/Provincias).');
+    if (activeKeys.length === 0 && !hasDrawnFeatures) {
+      alert('Por favor activa una capa en el menú (ej. Departamentos, Provincias o Distritos) o dibuja una entidad para exportar.');
       return;
     }
 
-    const featureCollection = {
-      type: "FeatureCollection",
-      features: state.featuresList.map(f => {
-        const geoJson = f.leafletLayer.toGeoJSON();
-        geoJson.properties = geoJson.properties || {};
-        geoJson.properties.name = f.name;
-        geoJson.properties.areaHa = f.areaHa;
-        geoJson.properties.perimeterKm = f.perimeterKm;
-        return geoJson;
-      })
+    const triggerDownload = (blob, filename) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     };
 
+    // Attempt Shapefile export via shpwrite
     if (typeof shpwrite !== 'undefined' && typeof shpwrite.download === 'function') {
-      shpwrite.download(featureCollection, { folder: `sdop_fcf_entidades_${Date.now()}`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
+      try {
+        for (const key of activeKeys) {
+          const layer = state.vectorLayers[key];
+          if (layer) {
+            const geojson = layer.toGeoJSON();
+            shpwrite.download(geojson, { folder: `sdop_fcf_${key}_shapefile`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
+          }
+        }
+
+        if (hasDrawnFeatures) {
+          const drawnGeoJSON = {
+            type: "FeatureCollection",
+            features: state.featuresList.map(f => {
+              const geoJson = f.leafletLayer.toGeoJSON();
+              geoJson.properties = geoJson.properties || {};
+              geoJson.properties.name = f.name || 'Entidad GIS';
+              geoJson.properties.areaHa = f.areaHa || 0;
+              geoJson.properties.perimeterKm = f.perimeterKm || 0;
+              return geoJson;
+            })
+          };
+          shpwrite.download(drawnGeoJSON, { folder: `sdop_fcf_entidades_dibujadas`, types: { point: 'points', polygon: 'polygons', line: 'lines' } });
+        }
+        return;
+      } catch (err) {
+        console.warn("shpwrite notice:", err);
+      }
+    }
+
+    // Fallback via JSZip / GeoJSON Package
+    if (typeof JSZip !== 'undefined') {
+      const zip = new JSZip();
+      for (const key of activeKeys) {
+        const layer = state.vectorLayers[key];
+        if (layer) {
+          const geojson = layer.toGeoJSON();
+          zip.file(`${key.toUpperCase()}_SDOP_FCF.geojson`, JSON.stringify(geojson, null, 2));
+        }
+      }
+
+      if (hasDrawnFeatures) {
+        const drawnGeoJSON = {
+          type: "FeatureCollection",
+          features: state.featuresList.map(f => {
+            const geoJson = f.leafletLayer.toGeoJSON();
+            geoJson.properties = geoJson.properties || {};
+            geoJson.properties.name = f.name || 'Entidad GIS';
+            geoJson.properties.areaHa = f.areaHa || 0;
+            geoJson.properties.perimeterKm = f.perimeterKm || 0;
+            return geoJson;
+          })
+        };
+        zip.file(`ENTIDADES_DIBUJADAS_SDOP.geojson`, JSON.stringify(drawnGeoJSON, null, 2));
+      }
+
+      const content = await zip.generateAsync({ type: "blob" });
+      triggerDownload(content, `sdop_fcf_capas_gis_export_${Date.now()}.zip`);
     } else {
-      exportToGeoJSON();
+      activeKeys.forEach(key => {
+        const layer = state.vectorLayers[key];
+        if (layer) {
+          const geojson = layer.toGeoJSON();
+          const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
+          triggerDownload(blob, `sdop_fcf_${key}_${Date.now()}.geojson`);
+        }
+      });
     }
   }
 
