@@ -364,12 +364,23 @@ h1, h2, h3, h4, h5, h6 {
 /* GIS Toolbar & Control Panels Floating Right */
 .gis-floating-controls {
   position: absolute;
-  top: 120px;
+  top: 80px;
   right: 16px;
+  max-height: calc(100vh - 140px);
   z-index: 500;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.gis-floating-controls::-webkit-scrollbar {
+  width: 4px;
+}
+.gis-floating-controls::-webkit-scrollbar-thumb {
+  background: var(--emerald-primary);
+  border-radius: 4px;
 }
 
 .control-card {

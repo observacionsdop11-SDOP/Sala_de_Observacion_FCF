@@ -197,11 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
     state.vectorLayers = {};
 
     const configs = [
-      { id: 'chk-sudamerica', key: 'sudamerica', url: './data/sudamerica.geojson', style: { color: '#64748b', weight: 1.5, fillOpacity: 0.05, dashArray: '4, 4' } },
       { id: 'chk-departamentos', key: 'departamentos', url: './data/departamentos.geojson', style: { color: '#00f0ff', weight: 2, fillOpacity: 0.12 } },
-      { id: 'chk-lago', key: 'lago', url: './data/lago.geojson', style: { color: '#38bdf8', weight: 1.5, fillOpacity: 0.35 } },
-      { id: 'chk-pichanaqui', key: 'pichanaqui', url: './data/pichanaqui.geojson', style: { color: '#f59e0b', weight: 2.2, fillOpacity: 0.25 } },
-      { id: 'chk-san-luis-de-shuaro', key: 'san-luis-de-shuaro', url: './data/san_luis_de_shuaro.geojson', style: { color: '#ef4444', weight: 2.2, fillOpacity: 0.25 } }
+      { id: 'chk-provincias', key: 'provincias', url: './data/provincias.geojson', style: { color: '#f59e0b', weight: 1.8, fillOpacity: 0.1, dashArray: '3, 3' } },
+      { id: 'chk-distritos', key: 'distritos', url: './data/distritos.geojson', style: { color: '#ef4444', weight: 1.5, fillOpacity: 0.15 } },
+      { id: 'chk-sudamerica', key: 'sudamerica', url: './data/sudamerica.geojson', style: { color: '#64748b', weight: 1.5, fillOpacity: 0.05, dashArray: '4, 4' } },
+      { id: 'chk-lago', key: 'lago', url: './data/lago.geojson', style: { color: '#38bdf8', weight: 1.5, fillOpacity: 0.35 } }
     ];
 
     configs.forEach(cfg => {
