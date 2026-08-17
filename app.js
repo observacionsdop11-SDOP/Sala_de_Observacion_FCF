@@ -201,7 +201,11 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'chk-provincias', key: 'provincias', url: './data/provincias.geojson', style: { color: '#ffaa00', weight: 2.2, fillOpacity: 0.12 } },
       { id: 'chk-distritos', key: 'distritos', url: './data/distritos.geojson', style: { color: '#ef4444', weight: 1.2, fillOpacity: 0.08, dashArray: '2, 2' } },
       { id: 'chk-sudamerica', key: 'sudamerica', url: './data/sudamerica.geojson', style: { color: '#64748b', weight: 1.5, fillOpacity: 0.05, dashArray: '4, 4' } },
-      { id: 'chk-lago', key: 'lago', url: './data/lago.geojson', style: { color: '#38bdf8', weight: 1.5, fillOpacity: 0.35 } }
+      { id: 'chk-lago', key: 'lago', url: './data/lago.geojson', style: { color: '#38bdf8', weight: 1.5, fillOpacity: 0.35 } },
+      // New layers for CobVeg and Ríos
+      { id: 'chk-cobveg', key: 'cobveg', url: './data/CobVeg_180615.geojson', style: { color: '#8b5cf6', weight: 2, fillOpacity: 0.2 } },
+      { id: 'chk-rios-principales', key: 'rios_principales', url: './data/Rios_Principales.geojson', style: { color: '#06b6d4', weight: 2, fillOpacity: 0.2 } },
+      { id: 'chk-rios-secundarios', key: 'rios_secundarios', url: './data/Rios_Secundarios.geojson', style: { color: '#10b981', weight: 2, fillOpacity: 0.2 } }
     ];
 
     configs.forEach(cfg => {

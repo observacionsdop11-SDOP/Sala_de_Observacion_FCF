@@ -51,6 +51,14 @@
           "@type": "CollegeOrUniversity",
           "name": "Universidad Nacional Agraria La Molina (UNALM)"
         }
+      },
+      {
+        "@type": "WebPage",
+        "name": "Geoportal SDOP FCF",
+        "description": "Geoportal SDOP FCF – visor interactivo de la Sala de Observación FCF UNALM",
+        "url": "https://observacionsdop11-sdop.github.io/Sala_de_Observacion_FCF/",
+        "datePublished": "2026-08-05",
+        "dateModified": "2026-08-05"
       }
     ]
   }
@@ -110,9 +118,24 @@
         <span>Importar Datos</span>
       </button>
       <button class="btn-header btn-header-export" id="btn-export-header">
-        <i class="fa-solid fa-file-export"></i>
-        <span>Exportar Shapefile (.zip)</span>
-      </button>
+  <i class="fa-solid fa-file-export"></i>
+  <span>Exportar Shapefile (.zip)</span>
+</button>
+<div class="visit-counter" id="visit-counter" style="margin-left: 12px; display:flex; align-items:center; gap:4px; font-size:0.9rem; color:var(--text-main);">
+  <span>👁️</span>
+  <span id="visit-count">0</span> visitas
+</div>
+<div class="download-links" style="margin-left:12px; display:flex; gap:8px; align-items:center;">
+  <a class="btn-header btn-header-download" href="data/CobVeg_180615.zip" download>
+    <i class="fa-solid fa-download"></i> CobVeg 180615
+  </a>
+  <a class="btn-header btn-header-download" href="data/Rios_Principales.zip" download>
+    <i class="fa-solid fa-download"></i> Ríos Principales
+  </a>
+  <a class="btn-header btn-header-download" href="data/Rios_Secundarios.zip" download>
+    <i class="fa-solid fa-download"></i> Ríos Secundarios
+  </a>
+</div>      </div>
     </div>
   </header>
 
@@ -197,13 +220,17 @@
               <span>Distritos (Perú)</span>
             </label>
             <label class="layer-checkbox-option">
-              <input type="checkbox" id="chk-sudamerica" />
-              <span>Sudamérica</span>
-            </label>
-            <label class="layer-checkbox-option">
-              <input type="checkbox" id="chk-lago" />
-              <span>Lagos e Hidrografía</span>
-            </label>
+                <input type="checkbox" id="chk-cobveg" checked />
+                <span>CobVeg 180615</span>
+              </label>
+              <label class="layer-checkbox-option">
+                <input type="checkbox" id="chk-rios-principales" checked />
+                <span>Ríos Principales</span>
+              </label>
+              <label class="layer-checkbox-option">
+                <input type="checkbox" id="chk-rios-secundarios" checked />
+                <span>Ríos Secundarios</span>
+              </label>
           </div>
         </div>
 
@@ -422,7 +449,7 @@
         </div>
 
         <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-          <a href="MANUAL_TECNICO_SDOP_FCF_UNALM.pdf" download class="btn-header btn-header-export" style="display: inline-flex; text-decoration: none; padding: 12px 24px; font-size: 0.95rem; border-radius: 8px; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);">
+          <a href="./MANUAL_TECNICO_SDOP_FCF_UNALM.pdf" download class="btn-header btn-header-export" style="display: inline-flex; text-decoration: none; padding: 12px 24px; font-size: 0.95rem; border-radius: 8px; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);">
             <i class="fa-solid fa-file-word" style="font-size: 1.25rem; color: #fff; margin-right: 10px;"></i>
             <span>Descargas..MANUAL TÉCNICO Y DE ADMINISTRACIÓN WEB GEOPORTAL SDOP FCF UNALM</span>
           </a>
@@ -542,6 +569,64 @@
       </div>
     </article>
   </div>
+<section id="geoportals" class="geoportals-section" style="padding:20px; background:rgba(30,41,59,0.6); border-radius:10px; margin-top:20px;">
+  <h2 style="color:var(--fire-amber); margin-bottom:12px;">Fuentes Geoportales</h2>
+  <table class="geoportals-table" style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr style="background:rgba(245,158,11,0.2); color:var(--fire-amber);">
+        <th style="padding:8px; text-align:left;">Entidad</th>
+        <th style="padding:8px; text-align:left;">Portal</th>
+        <th style="padding:8px; text-align:left;">Descripción</th>
+        <th style="padding:8px; text-align:left;">Link</th>
+        <th style="padding:8px; text-align:left;">Visitas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+        <td style="padding:8px;">SERNANP</td>
+        <td style="padding:8px;">Geoportal</td>
+        <td style="padding:8px;">Capas de áreas naturales protegidas, metadatos y servicios geográficos.</td>
+        <td style="padding:8px;"><a href="https://geo.sernanp.gob.pe/visorsernanp/" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
+        <td style="padding:8px;">—</td>
+      </tr>
+      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+        <td style="padding:8px;">IGN</td>
+        <td style="padding:8px;">Geoportal institucional / IDEP</td>
+        <td style="padding:8px;">Cartografía básica oficial y geoservicios nacionales.</td>
+        <td style="padding:8px;"><a href="https://www.idep.gob.pe/" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
+        <td style="padding:8px;">—</td>
+      </tr>
+      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+        <td style="padding:8px;">MINAM</td>
+        <td style="padding:8px;">Geoservidor</td>
+        <td style="padding:8px;">Capas ambientales, biodiversidad, cobertura vegetal y otros servicios temáticos.</td>
+        <td style="padding:8px;"><a href="https://www.idep.gob.pe/wms/wms_minam.html" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
+        <td style="padding:8px;">—</td>
+      </tr>
+      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+        <td style="padding:8px;">ANA</td>
+        <td style="padding:8px;">Geoportal Geohidro</td>
+        <td style="padding:8px;">Información hídrica, catálogos, visores y servicios web.</td>
+        <td style="padding:8px;"><a href="http://visorsiagua.ana.gob.ni/mapstore/#/viewer/openlayers/1" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
+        <td style="padding:8px;">—</td>
+      </tr>
+      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+        <td style="padding:8px;">GeoPerú</td>
+        <td style="padding:8px;">Plataforma Nacional de Datos Georreferenciados</td>
+        <td style="padding:8px;">Integración de datos oficiales georreferenciados del Estado peruano.</td>
+        <td style="padding:8px;"><a href="https://visor.geoperu.gob.pe/" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
+        <td style="padding:8px;">—</td>
+      </tr>
+      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+        <td style="padding:8px;">OSINFOR</td>
+        <td style="padding:8px;">SISFOR / visor geoespacial</td>
+        <td style="padding:8px;">Información forestal y supervisión.</td>
+        <td style="padding:8px;"><a href="https://sisfor.osinfor.gob.pe/visor/Home" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
+        <td style="padding:8px;">—</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
 
   <!-- MODAL: Importador de Datos GIS Estilo Google Earth Engine -->
   <div class="modal-overlay" id="modal-import">
