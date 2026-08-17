@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             style: cfg.style,
             onEachFeature: (feature, l) => {
               const props = feature.properties || {};
-              const title = props.DISTRITO || props.PROVINCIA || props.DEPARTAMEN || props.NOMBDEP || props.NOMBPROV || props.NOMBDIST || props.PAIS || 'Límite Político';
+              const title = props.CobVeg2013 || props.CV_Label || props.NOMBRE || props.NOM_RIO || props.DISTRITO || props.PROVINCIA || props.DEPARTAMEN || props.NOMBDEP || props.NOMBPROV || props.NOMBDIST || props.PAIS || 'Capa Temática';
               let popupHtml = `<strong style="color:#00f0ff; font-size:0.95rem;">${title}</strong><br/>`;
               if (props.PROVINCIA && props.DISTRITO) {
                 popupHtml += `<strong>Provincia:</strong> ${props.PROVINCIA}<br/>`;
