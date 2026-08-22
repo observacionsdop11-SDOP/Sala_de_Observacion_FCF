@@ -985,12 +985,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnImport) btnImport.addEventListener('click', () => openModal('modal-import'));
     if (btnExportHeader) btnExportHeader.addEventListener('click', exportToShapefileZip);
 
-    // Toggle KPI Floating Panel
+    // Toggle KPI Floating Panel (Abrir y Cerrar en cada clic)
     const btnToggleKpi = document.getElementById('btn-toggle-kpi');
     const kpiPanel = document.getElementById('kpi-floating-panel');
     if (btnToggleKpi && kpiPanel) {
-      btnToggleKpi.addEventListener('click', () => {
-        kpiPanel.classList.toggle('collapsed');
+      btnToggleKpi.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isCollapsed = kpiPanel.classList.toggle('collapsed');
+        if (!isCollapsed) {
+          initAnimatedKPIs();
+        }
       });
     }
 
