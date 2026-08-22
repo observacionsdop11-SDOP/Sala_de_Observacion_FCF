@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDragAndDrop();
   initModals();
   initAttributeTable();
+  initVisitorCounter();
 
   /* ==========================================================================
      1. Configuración de Proyecciones UTM Perú (Proj4js)
@@ -1054,5 +1055,57 @@ document.addEventListener('DOMContentLoaded', () => {
         iframe.src = "";
       }
     }
+  }
+
+  /* ==========================================================================
+     11. Contador de Visitas en Tiempo Real
+     ========================================================================== */
+  function initVisitorCounter() {
+    const counterEl = document.getElementById('visit-count');
+    if (!counterEl) return;
+
+    // 1. Contador local persistente inmediato (incrementa en cada carga)
+    let localCount = parseInt(localStorage.getItem('sdop_geoportal_visits') || '0', 10);
+    localCount += 1;
+    localStorage.setItem('sdop_geoportal_visits', localCount);
+    counterEl.innerText = localCount.toLocaleString();
+
+    // 2. Sincronización con contador global en la nube (visitorbadge.io)
+    const counterUrl = 'https://api.visitorbadge.io/api/visitors?path=observacionsdop11-sdop.Sala_de_Observacion_FCF&label=VISITAS';
+    
+    fetch(counterUrl)
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(svgText => {
+        const match = svgText.match(/VISITAS:\s*(\d+)/i) || svgText.match(/VISITORS:\s*(\d+)/i) || svgText.match(/>(\d+)<\/text>/);
+        if (match && match[1]) {
+          const globalCount = parseInt(match[1], 10);
+          const finalCount = Math.max(globalCount, localCount);
+          animateCounter(counterEl, localCount, finalCount);
+          localStorage.setItem('sdop_geoportal_visits', finalCount);
+        }
+      })
+      .catch(err => {
+        console.log('Contador operando en modo local:', err);
+      });
+  }
+
+  function animateCounter(el, start, end) {
+    if (start >= end) {
+      el.innerText = end.toLocaleString();
+      return;
+    }
+    let current = start;
+    const step = Math.max(1, Math.floor((end - start) / 20));
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= end) {
+        current = end;
+        clearInterval(timer);
+      }
+      el.innerText = current.toLocaleString();
+    }, 30);
   }
 });
