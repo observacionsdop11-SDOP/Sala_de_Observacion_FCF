@@ -114,6 +114,10 @@
         <i class="fa-solid fa-circle-play"></i>
         <span>Video SDOP</span>
       </button>
+      <button class="btn-header" id="btn-geoportals" style="border-color: rgba(245, 158, 11, 0.4); color: var(--fire-amber);">
+        <i class="fa-solid fa-earth-americas"></i>
+        <span>Fuentes Geoportales</span>
+      </button>
       <button class="btn-header btn-header-accent" id="btn-import">
         <i class="fa-solid fa-file-import"></i>
         <span>Importar Datos</span>
@@ -578,64 +582,72 @@
       </div>
     </article>
   </div>
-<section id="geoportals" class="geoportals-section" style="padding:20px; background:rgba(30,41,59,0.6); border-radius:10px; margin-top:20px;">
-  <h2 style="color:var(--fire-amber); margin-bottom:12px;">Fuentes Geoportales</h2>
-  <table class="geoportals-table" style="width:100%; border-collapse:collapse;">
-    <thead>
-      <tr style="background:rgba(245,158,11,0.2); color:var(--fire-amber);">
-        <th style="padding:8px; text-align:left;">Entidad</th>
-        <th style="padding:8px; text-align:left;">Portal</th>
-        <th style="padding:8px; text-align:left;">Descripción</th>
-        <th style="padding:8px; text-align:left;">Link</th>
-        <th style="padding:8px; text-align:left;">Visitas</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
-        <td style="padding:8px;">SERNANP</td>
-        <td style="padding:8px;">Geoportal</td>
-        <td style="padding:8px;">Capas de áreas naturales protegidas, metadatos y servicios geográficos.</td>
-        <td style="padding:8px;"><a href="https://geo.sernanp.gob.pe/visorsernanp/" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
-        <td style="padding:8px;">—</td>
-      </tr>
-      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
-        <td style="padding:8px;">IGN</td>
-        <td style="padding:8px;">Geoportal institucional / IDEP</td>
-        <td style="padding:8px;">Cartografía básica oficial y geoservicios nacionales.</td>
-        <td style="padding:8px;"><a href="https://www.idep.gob.pe/" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
-        <td style="padding:8px;">—</td>
-      </tr>
-      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
-        <td style="padding:8px;">MINAM</td>
-        <td style="padding:8px;">Geoservidor</td>
-        <td style="padding:8px;">Capas ambientales, biodiversidad, cobertura vegetal y otros servicios temáticos.</td>
-        <td style="padding:8px;"><a href="https://www.idep.gob.pe/wms/wms_minam.html" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
-        <td style="padding:8px;">—</td>
-      </tr>
-      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
-        <td style="padding:8px;">ANA</td>
-        <td style="padding:8px;">Geoportal Geohidro</td>
-        <td style="padding:8px;">Información hídrica, catálogos, visores y servicios web.</td>
-        <td style="padding:8px;"><a href="http://visorsiagua.ana.gob.ni/mapstore/#/viewer/openlayers/1" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
-        <td style="padding:8px;">—</td>
-      </tr>
-      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
-        <td style="padding:8px;">GeoPerú</td>
-        <td style="padding:8px;">Plataforma Nacional de Datos Georreferenciados</td>
-        <td style="padding:8px;">Integración de datos oficiales georreferenciados del Estado peruano.</td>
-        <td style="padding:8px;"><a href="https://visor.geoperu.gob.pe/" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
-        <td style="padding:8px;">—</td>
-      </tr>
-      <tr style="border-top:1px solid rgba(255,255,255,0.1);">
-        <td style="padding:8px;">OSINFOR</td>
-        <td style="padding:8px;">SISFOR / visor geoespacial</td>
-        <td style="padding:8px;">Información forestal y supervisión.</td>
-        <td style="padding:8px;"><a href="https://sisfor.osinfor.gob.pe/visor/Home" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Visitar</a></td>
-        <td style="padding:8px;">—</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
+  <!-- MODAL: Fuentes Geoportales -->
+  <div class="modal-overlay" id="modal-geoportals">
+    <article class="modal-card" style="max-width: 960px;">
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-title-icon" style="color: var(--fire-amber); background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3);">
+            <i class="fa-solid fa-earth-americas"></i>
+          </div>
+          <h2 class="modal-title">Fuentes Geoportales Oficiales del Perú</h2>
+        </div>
+        <button class="btn-close-modal" data-close="modal-geoportals">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+      <div class="modal-body" style="padding: 20px 24px; overflow-x: auto;">
+        <table class="geoportals-table" style="width:100%; border-collapse:collapse; font-size: 0.9rem;">
+          <thead>
+            <tr style="background:rgba(245,158,11,0.2); color:var(--fire-amber);">
+              <th style="padding:10px 12px; text-align:left;">Entidad</th>
+              <th style="padding:10px 12px; text-align:left;">Portal</th>
+              <th style="padding:10px 12px; text-align:left;">Descripción</th>
+              <th style="padding:10px 12px; text-align:center;">Acceso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+              <td style="padding:12px; font-weight:700; color:var(--cyan-accent);">SERNANP</td>
+              <td style="padding:12px;">Geoportal</td>
+              <td style="padding:12px; color:var(--text-muted);">Capas de áreas naturales protegidas, metadatos y servicios geográficos oficiales.</td>
+              <td style="padding:12px; text-align:center;"><a href="https://geo.sernanp.gob.pe/visorsernanp/" target="_blank" rel="noopener noreferrer" class="btn-header" style="display:inline-flex; padding:6px 14px; text-decoration:none; color:var(--cyan-accent); justify-content:center;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visitar</a></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+              <td style="padding:12px; font-weight:700; color:var(--cyan-accent);">IGN</td>
+              <td style="padding:12px;">Geoportal institucional / IDEP</td>
+              <td style="padding:12px; color:var(--text-muted);">Cartografía básica oficial y geoservicios nacionales del Instituto Geográfico Nacional.</td>
+              <td style="padding:12px; text-align:center;"><a href="https://www.idep.gob.pe/" target="_blank" rel="noopener noreferrer" class="btn-header" style="display:inline-flex; padding:6px 14px; text-decoration:none; color:var(--cyan-accent); justify-content:center;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visitar</a></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+              <td style="padding:12px; font-weight:700; color:var(--cyan-accent);">MINAM</td>
+              <td style="padding:12px;">Geoservidor</td>
+              <td style="padding:12px; color:var(--text-muted);">Capas ambientales, biodiversidad, cobertura vegetal y otros servicios temáticos.</td>
+              <td style="padding:12px; text-align:center;"><a href="https://www.idep.gob.pe/wms/wms_minam.html" target="_blank" rel="noopener noreferrer" class="btn-header" style="display:inline-flex; padding:6px 14px; text-decoration:none; color:var(--cyan-accent); justify-content:center;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visitar</a></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+              <td style="padding:12px; font-weight:700; color:var(--cyan-accent);">ANA</td>
+              <td style="padding:12px;">Geoportal Geohidro</td>
+              <td style="padding:12px; color:var(--text-muted);">Información hídrica, catálogos, visores de cuencas y servicios web hidrográficos.</td>
+              <td style="padding:12px; text-align:center;"><a href="http://visorsiagua.ana.gob.ni/mapstore/#/viewer/openlayers/1" target="_blank" rel="noopener noreferrer" class="btn-header" style="display:inline-flex; padding:6px 14px; text-decoration:none; color:var(--cyan-accent); justify-content:center;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visitar</a></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+              <td style="padding:12px; font-weight:700; color:var(--cyan-accent);">GeoPerú</td>
+              <td style="padding:12px;">Plataforma Nacional de Datos</td>
+              <td style="padding:12px; color:var(--text-muted);">Integración de datos oficiales georreferenciados del Estado peruano (PCM).</td>
+              <td style="padding:12px; text-align:center;"><a href="https://visor.geoperu.gob.pe/" target="_blank" rel="noopener noreferrer" class="btn-header" style="display:inline-flex; padding:6px 14px; text-decoration:none; color:var(--cyan-accent); justify-content:center;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visitar</a></td>
+            </tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.1);">
+              <td style="padding:12px; font-weight:700; color:var(--cyan-accent);">OSINFOR</td>
+              <td style="padding:12px;">SISFOR / visor geoespacial</td>
+              <td style="padding:12px; color:var(--text-muted);">Información forestal, concesiones y supervisión de recursos forestales y de fauna.</td>
+              <td style="padding:12px; text-align:center;"><a href="https://sisfor.osinfor.gob.pe/visor/Home" target="_blank" rel="noopener noreferrer" class="btn-header" style="display:inline-flex; padding:6px 14px; text-decoration:none; color:var(--cyan-accent); justify-content:center;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visitar</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </div>
 
   <!-- MODAL: Importador de Datos GIS Estilo Google Earth Engine -->
   <div class="modal-overlay" id="modal-import">

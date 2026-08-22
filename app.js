@@ -47,10 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
      2. Inicialización de Mapa Leaflet y Capas Base Google
      ========================================================================== */
   function initMap() {
-    // Center map over Peru (Lat: -9.19, Lon: -75.01, Zoom: 6)
+    // Center map over Peru (Lat: -9.3, Lon: -75.0, Zoom: 5.5)
     state.map = L.map('map', {
-      center: [-9.1900, -75.0150],
-      zoom: 6,
+      center: [-9.3000, -75.0000],
+      zoom: 5.5,
+      zoomSnap: 0.1,
+      zoomDelta: 0.5,
       zoomControl: false
     });
 
@@ -972,12 +974,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnGallery = document.getElementById('btn-gallery');
     const btnVideo = document.getElementById('btn-video');
     const btnImport = document.getElementById('btn-import');
+    const btnGeoportals = document.getElementById('btn-geoportals');
     const btnExportHeader = document.getElementById('btn-export-header');
 
     if (btnAbout) btnAbout.addEventListener('click', () => openModal('modal-about'));
     if (btnMethodology) btnMethodology.addEventListener('click', () => openModal('modal-methodology'));
     if (btnGallery) btnGallery.addEventListener('click', () => openModal('modal-gallery'));
     if (btnVideo) btnVideo.addEventListener('click', () => openModal('modal-video'));
+    if (btnGeoportals) btnGeoportals.addEventListener('click', () => openModal('modal-geoportals'));
     if (btnImport) btnImport.addEventListener('click', () => openModal('modal-import'));
     if (btnExportHeader) btnExportHeader.addEventListener('click', exportToShapefileZip);
 
