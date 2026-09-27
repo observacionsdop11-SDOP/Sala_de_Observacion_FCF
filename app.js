@@ -1159,6 +1159,38 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Botón de Compartir Enlace Directo al Video
+    const btnShareLink = document.getElementById('btn-share-video-link');
+    if (btnShareLink) {
+      btnShareLink.addEventListener('click', () => {
+        const shareUrl = `${window.location.origin}${window.location.pathname}?video=rsu`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          const textSpan = document.getElementById('share-link-text');
+          if (textSpan) {
+            const origText = textSpan.textContent;
+            textSpan.textContent = '¡Enlace Copiado! 📋';
+            btnShareLink.style.borderColor = 'var(--emerald-primary, #10b981)';
+            btnShareLink.style.color = 'var(--emerald-primary, #10b981)';
+            setTimeout(() => {
+              textSpan.textContent = origText;
+              btnShareLink.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+              btnShareLink.style.color = 'var(--fire-amber)';
+            }, 2500);
+          }
+        }).catch(() => {
+          prompt('Copia este enlace directo al video:', `${window.location.origin}${window.location.pathname}?video=rsu`);
+        });
+      });
+    }
+
+    // Auto-apertura si viene parámetro ?video=rsu, ?video=1, ?rsu=1 o hash #video
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('video') || urlParams.has('v') || urlParams.has('rsu') || window.location.hash === '#video') {
+        setTimeout(() => openModal('modal-video'), 450);
+      }
+    } catch (err) {}
+
     // Close Modal Listeners
     document.querySelectorAll('.btn-close-modal, [data-close]').forEach(btn => {
       btn.addEventListener('click', () => {
