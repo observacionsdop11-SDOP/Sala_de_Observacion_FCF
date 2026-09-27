@@ -1,0 +1,8 @@
+# Ignores for GitHub limits (files > 100MB)
+*.mp4
+*.zip
+*.asd
+*.docx
+*.pdf
+data/outputs/
+data/processed/

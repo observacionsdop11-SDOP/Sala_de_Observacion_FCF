@@ -1035,6 +1035,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const videoType = tab.getAttribute('data-video-type');
         const videoSrc = tab.getAttribute('data-video-src');
         const videoId = tab.getAttribute('data-video-id');
+        const vimeoId = tab.getAttribute('data-vimeo-id');
         const title = tab.getAttribute('data-title');
         const desc = tab.getAttribute('data-desc');
 
@@ -1064,9 +1065,32 @@ document.addEventListener('DOMContentLoaded', () => {
                       allowfullscreen>
                     </iframe>
                   `;
+                } else if (vimeoId) {
+                  wrapper.innerHTML = `
+                    <iframe 
+                      id="video-iframe"
+                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                      src="https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0" 
+                      title="${title}" 
+                      allow="autoplay; fullscreen; picture-in-picture" 
+                      allowfullscreen>
+                    </iframe>
+                  `;
                 }
               };
             }
+          } else if (videoType === 'vimeo' || vimeoId) {
+            const targetVimeo = vimeoId || videoId;
+            wrapper.innerHTML = `
+              <iframe 
+                id="video-iframe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                src="https://player.vimeo.com/video/${targetVimeo}?autoplay=1&title=0&byline=0&portrait=0" 
+                title="${title}" 
+                allow="autoplay; fullscreen; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            `;
           } else if (videoId) {
             wrapper.innerHTML = `
               <iframe 
@@ -1083,6 +1107,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (infoTitle) {
           const icon = tab.querySelector('i')?.outerHTML || '<i class="fa-solid fa-play"></i>';
+          infoTitle.innerHTML = `${icon} ${title}`;
+        }
+        if (infoDesc) {
+          infoDesc.textContent = desc;
+        }
+      });
+    });
           infoTitle.innerHTML = `${icon} ${title}`;
         }
         if (infoDesc) {
