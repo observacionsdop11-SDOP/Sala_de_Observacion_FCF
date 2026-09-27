@@ -861,7 +861,7 @@
     </article>
   </div>
 
-  <!-- MODAL: Video Institucional & Demostración SDOP -->
+  <!-- MODAL: Video Institucional & RSU SDOP -->
   <div class="modal-overlay" id="modal-video">
     <article class="modal-card" style="max-width: 920px;">
       <header class="modal-header">
@@ -869,30 +869,35 @@
           <div class="modal-title-icon" style="color: var(--fire-amber); background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
             <i class="fa-solid fa-film"></i>
           </div>
-          <h2 class="modal-title">Video Institucional — Sala de Observación SDOP UNALM</h2>
+          <h2 class="modal-title">Videos Institucionales & RSU — SDOP UNALM</h2>
         </div>
         <button class="btn-close-modal" data-close="modal-video">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </header>
       <div class="modal-body">
-        <div class="video-player-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000;">
-          <iframe 
-            id="video-iframe"
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-            src="https://www.youtube.com/embed/55yFDzljq-E?autoplay=1&rel=0&modestbranding=1" 
-            title="Video Institucional MapBiomas Fuego Perú — SDOP UNALM" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen>
-          </iframe>
+        <!-- Selector de Video / Playlist Options -->
+        <div class="video-selector-tabs" style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+          <button class="btn-video-tab active" data-video-type="mp4" data-video-src="data/RSU.mp4" data-video-id="55yFDzljq-E" data-title="Responsabilidad Social Universitaria (RSU) — Curso de Teledetección Forestal Ciclo 2026 - I" data-desc="Presentación oficial y desarrollo del proyecto de Responsabilidad Social Universitaria (RSU) en el marco del Curso de Teledetección Forestal (Ciclo 2026 - I), Facultad de Ciencias Forestales (FCF) - Universidad Nacional Agraria La Molina.">
+            <span class="tab-badge-num">1</span>
+            <i class="fa-solid fa-graduation-cap"></i> RSU Teledetección Forestal 2026-I
+          </button>
+          <button class="btn-video-tab" data-video-type="youtube" data-video-id="55yFDzljq-E" data-title="Video Institucional MapBiomas Fuego Perú — SDOP UNALM" data-desc="Presentación técnica del rol de la Sala de Observación FCF — UNALM en la iniciativa MapBiomas Fuego Perú, integración de series temporales Landsat y Sentinel, y redes neuronales profundas para la protección de la biodiversidad amazónica.">
+            <span class="tab-badge-num">2</span>
+            <i class="fa-solid fa-satellite-dish"></i> MapBiomas Fuego Perú — SDOP
+          </button>
+        </div>
+
+        <div id="video-wrapper" class="video-player-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000;">
+          <!-- Se inyecta dinámicamente el reproductor MP4 local (data/RSU.mp4) o iframe de YouTube -->
         </div>
 
         <div class="video-info-box">
-          <h3 style="font-size: 1rem; color: var(--emerald-primary); margin-bottom: 6px;">
-            <i class="fa-solid fa-satellite-dish"></i> Monitoreo Geoespacial de Incendios Forestales & Biomasa en Perú
+          <h3 id="video-info-title" style="font-size: 1rem; color: var(--emerald-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-graduation-cap"></i> Responsabilidad Social Universitaria (RSU) — Curso de Teledetección Forestal Ciclo 2026 - I
           </h3>
-          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-            Presentación técnica del rol de la Sala de Observación FCF — UNALM en la iniciativa MapBiomas Fuego Perú, integración de series temporales Landsat y Sentinel, y redes neuronales profundas para la protección de la biodiversidad amazónica.
+          <p id="video-info-desc" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Presentación oficial y desarrollo del proyecto de Responsabilidad Social Universitaria (RSU) en el marco del Curso de Teledetección Forestal (Ciclo 2026 - I), Facultad de Ciencias Forestales (FCF) - Universidad Nacional Agraria La Molina.
           </p>
         </div>
       </div>

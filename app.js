@@ -1025,6 +1025,72 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Video Selector Tabs Handler
+    const videoTabs = document.querySelectorAll('.btn-video-tab');
+    videoTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        videoTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const videoType = tab.getAttribute('data-video-type');
+        const videoSrc = tab.getAttribute('data-video-src');
+        const videoId = tab.getAttribute('data-video-id');
+        const title = tab.getAttribute('data-title');
+        const desc = tab.getAttribute('data-desc');
+
+        const wrapper = document.getElementById('video-wrapper');
+        const infoTitle = document.getElementById('video-info-title');
+        const infoDesc = document.getElementById('video-info-desc');
+
+        if (wrapper) {
+          if (videoType === 'mp4' && videoSrc) {
+            wrapper.innerHTML = `
+              <video id="video-element" controls autoplay style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; object-fit: contain; background: #000;">
+                <source src="${videoSrc}" type="video/mp4">
+                Tu navegador no soporta reproducción de video HTML5.
+              </video>
+            `;
+            const vElem = document.getElementById('video-element');
+            if (vElem) {
+              vElem.onerror = () => {
+                if (videoId) {
+                  wrapper.innerHTML = `
+                    <iframe 
+                      id="video-iframe"
+                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                      src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" 
+                      title="${title}" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                      allowfullscreen>
+                    </iframe>
+                  `;
+                }
+              };
+            }
+          } else if (videoId) {
+            wrapper.innerHTML = `
+              <iframe 
+                id="video-iframe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" 
+                title="${title}" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+              </iframe>
+            `;
+          }
+        }
+
+        if (infoTitle) {
+          const icon = tab.querySelector('i')?.outerHTML || '<i class="fa-solid fa-play"></i>';
+          infoTitle.innerHTML = `${icon} ${title}`;
+        }
+        if (infoDesc) {
+          infoDesc.textContent = desc;
+        }
+      });
+    });
+
     // Close Modal Listeners
     document.querySelectorAll('.btn-close-modal, [data-close]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1047,9 +1113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById(id);
     if (modal) modal.classList.add('active');
     if (id === 'modal-video') {
-      const iframe = document.getElementById('video-iframe');
-      if (iframe) {
-        iframe.src = "https://www.youtube.com/embed/55yFDzljq-E?autoplay=1&rel=0&modestbranding=1";
+      const activeTab = document.querySelector('.btn-video-tab.active') || document.querySelector('.btn-video-tab');
+      if (activeTab) {
+        activeTab.click();
       }
     }
   }
@@ -1058,10 +1124,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById(id);
     if (modal) modal.classList.remove('active');
     if (id === 'modal-video') {
-      const iframe = document.getElementById('video-iframe');
-      if (iframe) {
-        iframe.src = "";
-      }
+      const wrapper = document.getElementById('video-wrapper');
+      if (wrapper) wrapper.innerHTML = "";
     }
   }
 
