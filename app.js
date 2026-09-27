@@ -1025,95 +1025,132 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Video Selector Tabs Handler
+    // Helpers para extracción automática de IDs de YouTube y Vimeo
+    function parseYouTubeId(input) {
+      if (!input) return null;
+      const str = String(input).trim();
+      const match = str.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      if (match && match[1]) return match[1];
+      if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+      return null;
+    }
+
+    function parseVimeoId(input) {
+      if (!input) return null;
+      const str = String(input).trim();
+      const match = str.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)([0-9]+)/);
+      if (match && match[1]) return match[1];
+      if (/^[0-9]+$/.test(str)) return str;
+      return null;
+    }
+
+    // Soporte para parámetro URL (?v=..., ?video=..., ?rsu=...) para vincular video dinámicamente
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramVideo = urlParams.get('video') || urlParams.get('v') || urlParams.get('rsu');
+      if (paramVideo) {
+        const firstTab = document.querySelector('.btn-video-tab');
+        if (firstTab) firstTab.setAttribute('data-video-id', paramVideo);
+      }
+    } catch (err) {}
+
+    // Video Selector Tabs Handler (Soporte automático para enlaces completos o IDs)
     const videoTabs = document.querySelectorAll('.btn-video-tab');
     videoTabs.forEach(tab => {
       tab.addEventListener('click', () => {
         videoTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
 
-        const videoType = tab.getAttribute('data-video-type');
-        const videoSrc = tab.getAttribute('data-video-src');
-        const videoId = tab.getAttribute('data-video-id');
-        const vimeoId = tab.getAttribute('data-vimeo-id');
-        const title = tab.getAttribute('data-title');
-        const desc = tab.getAttribute('data-desc');
+        const rawType = (tab.getAttribute('data-video-type') || '').toLowerCase().trim();
+        const rawSrc = tab.getAttribute('data-video-src') || '';
+        const rawYtId = tab.getAttribute('data-video-id') || '';
+        const rawVimeoId = tab.getAttribute('data-vimeo-id') || '';
+        const title = tab.getAttribute('data-title') || '';
+        const desc = tab.getAttribute('data-desc') || '';
+
+        const ytId = parseYouTubeId(rawYtId) || parseYouTubeId(rawSrc) || parseYouTubeId(rawVimeoId);
+        const vimeoId = parseVimeoId(rawVimeoId) || parseVimeoId(rawSrc) || parseVimeoId(rawYtId);
 
         const wrapper = document.getElementById('video-wrapper');
         const infoTitle = document.getElementById('video-info-title');
         const infoDesc = document.getElementById('video-info-desc');
 
         if (wrapper) {
-          if (videoType === 'mp4' && videoSrc) {
+          const renderYouTube = (idToUse) => {
+            wrapper.innerHTML = `
+              <iframe 
+                id="video-iframe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                src="https://www.youtube.com/embed/${idToUse}?autoplay=1&rel=0&modestbranding=1" 
+                title="${title}" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+              </iframe>
+            `;
+          };
+
+          const renderVimeo = (idToUse) => {
+            wrapper.innerHTML = `
+              <iframe 
+                id="video-iframe"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                src="https://player.vimeo.com/video/${idToUse}?autoplay=1&title=0&byline=0&portrait=0" 
+                title="${title}" 
+                allow="autoplay; fullscreen; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            `;
+          };
+
+          const renderFallbackMessage = () => {
+            wrapper.innerHTML = `
+              <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; background: rgba(15, 23, 42, 0.96); color: #fff; font-family: inherit;">
+                <i class="fa-solid fa-graduation-cap" style="font-size: 2.8rem; color: var(--fire-amber, #f59e0b); margin-bottom: 12px;"></i>
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: #f8fafc;">Video RSU — Reproducción en Streaming</h3>
+                <p style="font-size: 0.85rem; color: #94a3b8; max-width: 580px; margin: 0 0 14px 0; line-height: 1.5;">
+                  El archivo local <code>data/RSU.mp4</code> (~778 MB) se reproduce de manera local. Para visualización web en GitHub Pages, puedes pegar el enlace completo o ID de tu video de YouTube o Vimeo en el atributo <code>data-video-id</code> o <code>data-vimeo-id</code> del botón en <code>index.html</code>.
+                </p>
+                <div style="font-size: 0.78rem; color: #64748b; background: rgba(255,255,255,0.05); padding: 8px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">
+                  <i class="fa-solid fa-magic-wand-sparkles" style="color: var(--fire-amber, #f59e0b);"></i> Soporte automático: pega el enlace directo (URL completa) o solo el ID.
+                </div>
+              </div>
+            `;
+          };
+
+          if (rawType === 'vimeo' || (vimeoId && !ytId && rawType !== 'youtube' && rawType !== 'mp4')) {
+            renderVimeo(vimeoId);
+          } else if (rawType === 'youtube' || (ytId && rawType !== 'vimeo' && rawType !== 'mp4')) {
+            renderYouTube(ytId);
+          } else if (rawType === 'mp4' || rawSrc) {
             wrapper.innerHTML = `
               <video id="video-element" controls autoplay style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; object-fit: contain; background: #000;">
-                <source src="${videoSrc}" type="video/mp4">
+                <source src="${rawSrc}" type="video/mp4">
                 Tu navegador no soporta reproducción de video HTML5.
               </video>
             `;
             const vElem = document.getElementById('video-element');
             if (vElem) {
               vElem.onerror = () => {
-                if (videoId) {
-                  wrapper.innerHTML = `
-                    <iframe 
-                      id="video-iframe"
-                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                      src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" 
-                      title="${title}" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                      allowfullscreen>
-                    </iframe>
-                  `;
+                if (ytId) {
+                  renderYouTube(ytId);
                 } else if (vimeoId) {
-                  wrapper.innerHTML = `
-                    <iframe 
-                      id="video-iframe"
-                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                      src="https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0" 
-                      title="${title}" 
-                      allow="autoplay; fullscreen; picture-in-picture" 
-                      allowfullscreen>
-                    </iframe>
-                  `;
+                  renderVimeo(vimeoId);
+                } else {
+                  renderFallbackMessage();
                 }
               };
             }
-          } else if (videoType === 'vimeo' || vimeoId) {
-            const targetVimeo = vimeoId || videoId;
-            wrapper.innerHTML = `
-              <iframe 
-                id="video-iframe"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                src="https://player.vimeo.com/video/${targetVimeo}?autoplay=1&title=0&byline=0&portrait=0" 
-                title="${title}" 
-                allow="autoplay; fullscreen; picture-in-picture" 
-                allowfullscreen>
-              </iframe>
-            `;
-          } else if (videoId) {
-            wrapper.innerHTML = `
-              <iframe 
-                id="video-iframe"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" 
-                title="${title}" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-              </iframe>
-            `;
+          } else if (ytId) {
+            renderYouTube(ytId);
+          } else if (vimeoId) {
+            renderVimeo(vimeoId);
+          } else {
+            renderFallbackMessage();
           }
         }
 
         if (infoTitle) {
           const icon = tab.querySelector('i')?.outerHTML || '<i class="fa-solid fa-play"></i>';
-          infoTitle.innerHTML = `${icon} ${title}`;
-        }
-        if (infoDesc) {
-          infoDesc.textContent = desc;
-        }
-      });
-    });
           infoTitle.innerHTML = `${icon} ${title}`;
         }
         if (infoDesc) {
