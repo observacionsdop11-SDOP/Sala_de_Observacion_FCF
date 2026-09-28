@@ -1076,13 +1076,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const infoDesc = document.getElementById('video-info-desc');
 
         if (wrapper) {
+          const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth < 768);
+          const autoPlayVal = isMobileDevice ? '0' : '1';
+
           const renderYouTube = (idToUse) => {
             wrapper.innerHTML = `
               <iframe 
                 id="video-iframe"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                src="https://www.youtube.com/embed/${idToUse}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=0&cc_lang_pref=none&hl=es" 
+                src="https://www.youtube.com/embed/${idToUse}?autoplay=${autoPlayVal}&playsinline=1&rel=0&modestbranding=1&cc_load_policy=0&cc_lang_pref=none&hl=es" 
                 title="${title}" 
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowfullscreen>
               </iframe>
@@ -1094,8 +1098,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <iframe 
                 id="video-iframe"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                src="https://player.vimeo.com/video/${idToUse}?autoplay=1&title=0&byline=0&portrait=0" 
+                src="https://player.vimeo.com/video/${idToUse}?autoplay=${autoPlayVal}&playsinline=1&title=0&byline=0&portrait=0" 
                 title="${title}" 
+                loading="lazy"
                 allow="autoplay; fullscreen; picture-in-picture" 
                 allowfullscreen>
               </iframe>
@@ -1218,7 +1223,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has('video') || urlParams.has('v') || urlParams.has('rsu') || window.location.hash === '#video') {
-        setTimeout(() => openModal('modal-video'), 450);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+        setTimeout(() => openModal('modal-video'), isMobile ? 850 : 450);
       }
     } catch (err) {}
 
