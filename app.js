@@ -1156,8 +1156,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (infoDesc) {
           infoDesc.textContent = desc;
         }
+
+        // Actualizar contador de Me gusta y contabilizar como visita al cambiar tab o abrir video
+        updateVideoLikesUI();
+        registerVideoVisit();
       });
     });
+
+    // Handler de Botón Me Gusta (Manito Arriba 👍)
+    const btnLike = document.getElementById('btn-video-like');
+    if (btnLike) {
+      btnLike.addEventListener('click', (e) => {
+        e.preventDefault();
+        const key = getActiveVideoKey();
+        const defaultLikes = key === 'rsu' ? 148 : 96;
+        let count = parseInt(localStorage.getItem(`sdop_likes_${key}`) || defaultLikes.toString(), 10);
+        let isLiked = localStorage.getItem(`sdop_user_liked_${key}`) === 'true';
+
+        if (isLiked) {
+          count = Math.max(defaultLikes, count - 1);
+          isLiked = false;
+        } else {
+          count += 1;
+          isLiked = true;
+          btnLike.classList.add('like-animate');
+          setTimeout(() => btnLike.classList.remove('like-animate'), 500);
+        }
+
+        localStorage.setItem(`sdop_likes_${key}`, count);
+        localStorage.setItem(`sdop_user_liked_${key}`, isLiked ? 'true' : 'false');
+
+        updateVideoLikesUI();
+      });
+    }
 
     // Botón de Compartir Enlace Directo al Video
     const btnShareLink = document.getElementById('btn-share-video-link');
@@ -1209,6 +1240,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ==========================================================================
+     Funciones Auxiliares para Me Gusta y Contador de Visitas de Videos
+     ========================================================================== */
+  function getActiveVideoKey() {
+    const activeTab = document.querySelector('.btn-video-tab.active');
+    if (!activeTab) return 'rsu';
+    const text = (activeTab.textContent || '').toLowerCase();
+    if (text.includes('mapbiomas')) return 'mapbiomas';
+    return 'rsu';
+  }
+
+  function updateVideoLikesUI() {
+    const key = getActiveVideoKey();
+    const defaultLikes = key === 'rsu' ? 148 : 96;
+    let count = parseInt(localStorage.getItem(`sdop_likes_${key}`) || defaultLikes.toString(), 10);
+    const isLiked = localStorage.getItem(`sdop_user_liked_${key}`) === 'true';
+
+    const btn = document.getElementById('btn-video-like');
+    const countEl = document.getElementById('like-count');
+    const labelEl = document.getElementById('like-label');
+    if (!btn || !countEl) return;
+
+    countEl.textContent = count.toLocaleString();
+
+    if (isLiked) {
+      btn.classList.add('liked');
+      if (labelEl) labelEl.textContent = 'Te gusta';
+    } else {
+      btn.classList.remove('liked');
+      if (labelEl) labelEl.textContent = 'Me gusta';
+    }
+  }
+
+  function registerVideoVisit() {
+    const counterEl = document.getElementById('visit-count');
+    let localCount = parseInt(localStorage.getItem('sdop_geoportal_visits') || '0', 10);
+    localCount += 1;
+    localStorage.setItem('sdop_geoportal_visits', localCount);
+    if (counterEl) {
+      counterEl.innerText = localCount.toLocaleString();
+      const parent = counterEl.closest('.visit-counter') || counterEl.parentElement;
+      if (parent) {
+        parent.classList.add('pulse-counter');
+        setTimeout(() => parent.classList.remove('pulse-counter'), 800);
+      }
+    }
+  }
+
   function openModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.add('active');
@@ -1216,6 +1295,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const activeTab = document.querySelector('.btn-video-tab.active') || document.querySelector('.btn-video-tab');
       if (activeTab) {
         activeTab.click();
+      } else {
+        updateVideoLikesUI();
+        registerVideoVisit();
       }
     }
   }
