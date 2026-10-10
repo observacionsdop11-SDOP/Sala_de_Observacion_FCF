@@ -1336,3 +1336,121 @@ h1, h2, h3, h4, h5, h6 {
     width: 200px;
   }
 }
+
+/* ==========================================================================
+   Mobile Optimization for Video Modal & Geoportal (Smartphones < 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-card {
+    max-width: 100% !important;
+    max-height: 94vh;
+    border-radius: 14px;
+    margin: 0;
+  }
+
+  .modal-header {
+    padding: 10px 14px;
+  }
+
+  .modal-title {
+    font-size: 0.98rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .modal-title-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .modal-body {
+    padding: 10px 12px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(94vh - 54px);
+  }
+
+  .video-selector-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-video-tab {
+    flex: 1 1 calc(50% - 6px);
+    padding: 7px 10px;
+    font-size: 0.74rem;
+    min-height: 38px;
+    justify-content: center;
+    text-align: center;
+    border-radius: 8px;
+    touch-action: manipulation;
+  }
+
+  .btn-video-tab .tab-badge-num {
+    width: 18px;
+    height: 18px;
+    font-size: 0.68rem;
+    flex-shrink: 0;
+  }
+
+  .video-player-container {
+    border-radius: 10px;
+  }
+
+  .video-info-box {
+    padding: 10px 12px;
+    margin-top: 10px;
+  }
+
+  #video-info-title {
+    font-size: 0.88rem !important;
+  }
+
+  #video-info-desc {
+    font-size: 0.76rem !important;
+    line-height: 1.45;
+  }
+
+  .btn-like-video {
+    width: 100%;
+    justify-content: center;
+    min-height: 40px;
+    margin-top: 6px;
+    touch-action: manipulation;
+  }
+
+  .video-modal-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+  }
+
+  .video-modal-footer > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .video-modal-footer .btn-header,
+  .video-modal-footer .btn-header-accent {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    min-height: 42px;
+    font-size: 0.86rem;
+    touch-action: manipulation;
+  }
+}
