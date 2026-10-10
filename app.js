@@ -1184,7 +1184,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnLike.addEventListener('click', (e) => {
         e.preventDefault();
         const key = getActiveVideoKey();
-        const defaultLikes = key === 'rsu' ? 148 : 96;
+        const defaultLikes = getDefaultLikesForKey(key);
         let count = parseInt(localStorage.getItem(`sdop_likes_${key}`) || defaultLikes.toString(), 10);
         let isLiked = localStorage.getItem(`sdop_user_liked_${key}`) === 'true';
 
@@ -1261,15 +1261,23 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   function getActiveVideoKey() {
     const activeTab = document.querySelector('.btn-video-tab.active');
-    if (!activeTab) return 'rsu';
+    if (!activeTab) return 'rsu_2026_ii';
     const text = (activeTab.textContent || '').toLowerCase();
+    if (text.includes('2026-ii') || text.includes('2026 - ii')) return 'rsu_2026_ii';
+    if (text.includes('2026-i') || text.includes('2026 - i')) return 'rsu_2026_i';
     if (text.includes('mapbiomas')) return 'mapbiomas';
-    return 'rsu';
+    return 'rsu_2026_ii';
+  }
+
+  function getDefaultLikesForKey(key) {
+    if (key === 'rsu_2026_ii') return 156;
+    if (key === 'rsu_2026_i') return 148;
+    return 96;
   }
 
   function updateVideoLikesUI() {
     const key = getActiveVideoKey();
-    const defaultLikes = key === 'rsu' ? 148 : 96;
+    const defaultLikes = getDefaultLikesForKey(key);
     let count = parseInt(localStorage.getItem(`sdop_likes_${key}`) || defaultLikes.toString(), 10);
     const isLiked = localStorage.getItem(`sdop_user_liked_${key}`) === 'true';
 
