@@ -1162,6 +1162,16 @@ document.addEventListener('DOMContentLoaded', () => {
           infoDesc.textContent = desc;
         }
 
+        const btnYtApp = document.getElementById('btn-open-youtube-app');
+        if (btnYtApp) {
+          if (ytId) {
+            btnYtApp.href = `https://youtu.be/${ytId}`;
+            btnYtApp.style.display = 'inline-flex';
+          } else {
+            btnYtApp.style.display = 'none';
+          }
+        }
+
         // Actualizar contador de Me gusta y contabilizar como visita al cambiar tab o abrir video
         updateVideoLikesUI();
         registerVideoVisit();
