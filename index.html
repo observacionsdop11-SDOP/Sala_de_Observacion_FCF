@@ -86,7 +86,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
   <!-- Estilos Personalizados -->
-  <link rel="stylesheet" href="styles.css?v=20261012-senamhi-fix" />
+  <link rel="stylesheet" href="styles.css?v=20261012-clear-import" />
 </head>
 <body>
 
@@ -132,6 +132,10 @@
         <i class="fa-solid fa-file-import"></i>
         <span>Importar Datos</span>
       </button>
+      <button class="btn-header" id="btn-clear-imported-header" style="border-color: rgba(239, 68, 68, 0.45); color: #f87171; background: rgba(239, 68, 68, 0.12); display: none;" title="Retirar capas importadas del visor">
+        <i class="fa-solid fa-trash-can-arrow-up"></i>
+        <span>Limpiar Capas (<strong id="imported-count-header">0</strong>)</span>
+      </button>
       <button class="btn-header btn-header-export" id="btn-export-header">
   <i class="fa-solid fa-file-export"></i>
   <span>Exportar Shapefile (.zip)</span>
@@ -171,6 +175,22 @@
           </button>
         </div>
         <div class="gis-search-dropdown" id="search-dropdown-results" style="display: none;"></div>
+      </div>
+
+      <!-- Barra Flotante de Capas Importadas Activas (Acceso Rápido para Retirar) -->
+      <div class="floating-imported-bar" id="floating-imported-bar" style="display: none;">
+        <div class="floating-imported-content">
+          <i class="fa-solid fa-file-circle-check" style="color: var(--emerald-primary);"></i>
+          <span id="floating-imported-label">1 Capa Importada Activa</span>
+        </div>
+        <div class="floating-imported-actions">
+          <button class="btn-floating-action btn-floating-manage" id="btn-floating-manage-imports" title="Gestionar / Ver capas importadas">
+            <i class="fa-solid fa-layer-group"></i> Ver Capas
+          </button>
+          <button class="btn-floating-action btn-floating-clear" id="btn-floating-clear-imports" title="Retirar capa importada del visor">
+            <i class="fa-solid fa-trash-can"></i> Retirar
+          </button>
+        </div>
       </div>
 
       <!-- Top Floating KPIs Panel -->
@@ -354,6 +374,10 @@
             <button class="btn-tool" id="btn-clear-drawings">
               <i class="fa-solid fa-trash-can"></i>
               <span>Limpiar Dibujos</span>
+            </button>
+            <button class="btn-tool" id="btn-clear-imported" style="border-color: rgba(239, 68, 68, 0.45); color: #f87171;">
+              <i class="fa-solid fa-trash-can-arrow-up"></i>
+              <span>Retirar Capas Importadas</span>
             </button>
             <button class="btn-tool" id="btn-export-data">
               <i class="fa-solid fa-download"></i>
@@ -731,6 +755,19 @@
               </span>
             </div>
           </div>
+        </div>
+
+        <!-- Sección de Gestión de Capas Importadas Activas en el Visor -->
+        <div id="modal-imported-layers-section" style="margin-top: 18px; display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 0.85rem; font-weight: 600; color: var(--emerald-primary); margin: 0;">
+              <i class="fa-solid fa-layer-group"></i> Capas Importadas en el Visor (<span id="modal-imported-count">0</span>):
+            </label>
+            <button class="btn-tool" id="btn-modal-clear-all-imports" style="padding: 4px 10px; font-size: 0.75rem; border-color: rgba(239, 68, 68, 0.45); color: #f87171;">
+              <i class="fa-solid fa-trash-can"></i> Retirar Todas las Capas
+            </button>
+          </div>
+          <div id="modal-imported-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;"></div>
         </div>
       </div>
     </article>
@@ -1158,6 +1195,6 @@
   <script src="https://unpkg.com/shp-write@latest/shpwrite.js"></script>
 
   <!-- Main App Script -->
-  <script src="app.js?v=20261012-senamhi-fix"></script>
+  <script src="app.js?v=20261012-clear-import"></script>
 </body>
 </html>

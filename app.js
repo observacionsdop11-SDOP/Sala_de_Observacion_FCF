@@ -463,13 +463,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Clear drawings button
+    // Clear drawings button (solo dibujos vectoriales manuales)
     const btnClear = document.getElementById('btn-clear-drawings');
     if (btnClear) {
       btnClear.addEventListener('click', () => {
-        if (confirm('¿Deseas eliminar todas las entidades dibujadas del mapa?')) {
+        if (confirm('¿Deseas eliminar las geometrías dibujadas a mano del mapa?')) {
           state.drawnItems.clearLayers();
-          state.featuresList = [];
+          state.featuresList = state.featuresList.filter(f => f.isImported);
           renderAttributeTable();
         }
       });
@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     7. Importador de Datos GIS (Drag & Drop + File Upload)
+     7. Importador de Datos GIS (Drag & Drop + File Upload + Limpieza de Capas)
      ========================================================================== */
   function initDragAndDrop() {
     const dropzone = document.getElementById('dropzone');
@@ -509,6 +509,19 @@ document.addEventListener('DOMContentLoaded', () => {
         handleImportedFiles(e.target.files);
       }
     });
+
+    // Vincular botones para retirar/limpiar capas importadas
+    const btnClearHeader = document.getElementById('btn-clear-imported-header');
+    const btnClearSidebar = document.getElementById('btn-clear-imported');
+    const btnClearFloating = document.getElementById('btn-floating-clear-imports');
+    const btnManageFloating = document.getElementById('btn-floating-manage-imports');
+    const btnClearModalAll = document.getElementById('btn-modal-clear-all-imports');
+
+    if (btnClearHeader) btnClearHeader.addEventListener('click', clearAllImportedLayers);
+    if (btnClearSidebar) btnClearSidebar.addEventListener('click', clearAllImportedLayers);
+    if (btnClearFloating) btnClearFloating.addEventListener('click', clearAllImportedLayers);
+    if (btnManageFloating) btnManageFloating.addEventListener('click', () => openModal('modal-import'));
+    if (btnClearModalAll) btnClearModalAll.addEventListener('click', clearAllImportedLayers);
   }
 
   function handleImportedFiles(files) {
@@ -536,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
             geometry: g,
             properties: properties[idx] || {}
           }));
-          addGeoJSONToMap({ type: "FeatureCollection", features: features }, shpFile.name);
+          addGeoJSONToMap({ type: "FeatureCollection", features: features }, shpFile.name, 'Shapefile (.shp)');
         } catch(err) {
           alert(`Error al procesar Shapefile (.shp/.dbf): ${err.message}`);
         }
@@ -571,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.onload = (e) => {
       try {
         const geoJsonData = JSON.parse(e.target.result);
-        addGeoJSONToMap(geoJsonData, file.name);
+        addGeoJSONToMap(geoJsonData, file.name, 'GeoJSON');
       } catch (err) {
         alert(`Error al leer archivo GeoJSON: ${err.message}`);
       }
@@ -585,7 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.onload = (e) => {
       if (typeof shp !== 'undefined') {
         shp(e.target.result).then((geoJsonData) => {
-          addGeoJSONToMap(geoJsonData, file.name);
+          addGeoJSONToMap(geoJsonData, file.name, 'Shapefile (.zip)');
         }).catch(err => {
           alert(`Error al procesar el Shapefile (.zip): ${err.message}`);
         });
@@ -624,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (features.length > 0) {
           const geoJsonData = { type: "FeatureCollection", features: features };
-          addGeoJSONToMap(geoJsonData, file.name);
+          addGeoJSONToMap(geoJsonData, file.name, 'Puntos CSV');
         } else {
           alert('No se encontraron columnas de Latitud/Longitud en el archivo CSV.');
         }
@@ -661,7 +674,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           if (features.length > 0) {
-            addGeoJSONToMap({ type: "FeatureCollection", features: features }, file.name);
+            addGeoJSONToMap({ type: "FeatureCollection", features: features }, file.name, 'Puntos Excel');
           } else {
             alert('No se encontraron coordenadas válidas en la hoja de Excel.');
           }
@@ -681,12 +694,15 @@ document.addEventListener('DOMContentLoaded', () => {
         parseGeoraster(e.target.result).then(georaster => {
           const layer = new GeoRasterLayer({
             georaster: georaster,
-            opacity: 0.7,
+            opacity: 0.75,
             resolution: 256
           });
           layer.addTo(state.map);
-          state.map.fitBounds(layer.getBounds());
-          alert(`GeoTIFF "${file.name}" cargado exitosamente en el mapa.`);
+          try {
+            state.map.fitBounds(layer.getBounds());
+          } catch(err) {}
+
+          registerImportedLayer(layer, file.name, 'GeoTIFF (Raster)');
         }).catch(err => {
           alert(`Error procesando GeoTIFF: ${err.message}`);
         });
@@ -698,7 +714,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Helper to add GeoJSON features to Leaflet
-  function addGeoJSONToMap(geoJsonData, fileName) {
+  function addGeoJSONToMap(geoJsonData, fileName, fileType = 'Vector (GeoJSON)') {
+    const importId = 'import_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
     const geoJsonLayer = L.geoJSON(geoJsonData, {
       style: () => ({
         color: '#f59e0b',
@@ -733,17 +750,204 @@ document.addEventListener('DOMContentLoaded', () => {
           areaHa: areaHa,
           perimeterKm: perimeterKm,
           name: feature.properties?.name || feature.properties?.NOMBRE || `${fileName} #${state.nextFeatureId - 1}`,
-          leafletLayer: layer
+          leafletLayer: layer,
+          isImported: true,
+          importId: importId
         });
       }
     }).addTo(state.map);
 
-    state.importedLayers.push(geoJsonLayer);
+    registerImportedLayer(geoJsonLayer, fileName, fileType, importId);
     
     // Zoom to layer bounds
     try {
       state.map.fitBounds(geoJsonLayer.getBounds());
     } catch(e) {}
+  }
+
+  // Sistema de Gestión y Limpieza de Capas Importadas
+  function registerImportedLayer(layer, fileName, fileType, customId) {
+    const layerId = customId || ('import_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
+    const item = {
+      id: layerId,
+      name: fileName,
+      type: fileType,
+      layer: layer,
+      visible: true
+    };
+    state.importedLayers.push(item);
+    updateImportedLayersUI();
+    showImportToast(`Capa "${fileName}" cargada en el visor.`, true);
+    return layerId;
+  }
+
+  function removeImportedLayer(layerId) {
+    const idx = state.importedLayers.findIndex(item => item.id === layerId);
+    if (idx !== -1) {
+      const item = state.importedLayers[idx];
+      if (item.layer && state.map.hasLayer(item.layer)) {
+        state.map.removeLayer(item.layer);
+      }
+      state.featuresList = state.featuresList.filter(f => f.importId !== layerId);
+      state.importedLayers.splice(idx, 1);
+      updateImportedLayersUI();
+      renderAttributeTable();
+      showImportToast(`Capa "${item.name}" retirada del visor.`, true);
+    }
+  }
+
+  function clearAllImportedLayers() {
+    if (!state.importedLayers || state.importedLayers.length === 0) {
+      alert('No hay capas importadas actualmente en el visor.');
+      return;
+    }
+    const count = state.importedLayers.length;
+    if (confirm(`¿Deseas retirar ${count === 1 ? 'la capa importada' : 'las ' + count + ' capas importadas'} del mapa?`)) {
+      state.importedLayers.forEach(item => {
+        if (item.layer && state.map.hasLayer(item.layer)) {
+          state.map.removeLayer(item.layer);
+        }
+      });
+      state.featuresList = state.featuresList.filter(f => !f.isImported);
+      state.importedLayers = [];
+      updateImportedLayersUI();
+      renderAttributeTable();
+      showImportToast('Todas las capas importadas han sido retiradas del visor.', true);
+    }
+  }
+  window.clearAllImportedLayers = clearAllImportedLayers;
+
+  function toggleImportedLayerVisibility(layerId) {
+    const item = state.importedLayers.find(i => i.id === layerId);
+    if (!item || !item.layer) return;
+    if (state.map.hasLayer(item.layer)) {
+      state.map.removeLayer(item.layer);
+      item.visible = false;
+    } else {
+      state.map.addLayer(item.layer);
+      item.visible = true;
+    }
+    updateImportedLayersUI();
+  }
+
+  function showImportToast(message, isSuccess = true) {
+    let toast = document.getElementById('wms-notification-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'wms-notification-toast';
+      document.body.appendChild(toast);
+    }
+    toast.className = `wms-toast ${isSuccess ? 'toast-success' : 'toast-error'}`;
+    toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> <span>${message}</span>`;
+    toast.style.display = 'flex';
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+    }, 10);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(-20px)';
+      setTimeout(() => { toast.style.display = 'none'; }, 300);
+    }, 4500);
+  }
+
+  function updateImportedLayersUI() {
+    const count = (state.importedLayers || []).length;
+    
+    // 1. Header Button Badge
+    const headerBtn = document.getElementById('btn-clear-imported-header');
+    const headerCount = document.getElementById('imported-count-header');
+    if (headerBtn) {
+      if (count > 0) {
+        headerBtn.style.display = 'inline-flex';
+        if (headerCount) headerCount.innerText = count;
+      } else {
+        headerBtn.style.display = 'none';
+      }
+    }
+
+    // 2. Floating Map Bar
+    const floatingBar = document.getElementById('floating-imported-bar');
+    const floatingLabel = document.getElementById('floating-imported-label');
+    if (floatingBar) {
+      if (count > 0) {
+        floatingBar.style.display = 'flex';
+        if (floatingLabel) {
+          const firstName = state.importedLayers[0].name;
+          floatingLabel.innerText = count === 1 
+            ? `Capa: ${firstName.length > 22 ? firstName.substring(0, 20) + '...' : firstName}` 
+            : `${count} Capas Importadas`;
+        }
+      } else {
+        floatingBar.style.display = 'none';
+      }
+    }
+
+    // 3. Modal Import active section
+    const modalSection = document.getElementById('modal-imported-layers-section');
+    const modalCount = document.getElementById('modal-imported-count');
+    const modalList = document.getElementById('modal-imported-list');
+    if (modalSection) {
+      if (count > 0) {
+        modalSection.style.display = 'block';
+        if (modalCount) modalCount.innerText = count;
+        if (modalList) {
+          modalList.innerHTML = state.importedLayers.map(item => `
+            <div class="imported-layer-item" id="item-${item.id}">
+              <div style="flex: 1; min-width: 0; padding-right: 8px;">
+                <strong style="color: #f8fafc; font-size: 0.84rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <i class="fa-solid fa-file" style="color: var(--cyan-accent); margin-right: 4px;"></i>${item.name}
+                </strong>
+                <small style="color: #94a3b8; font-size: 0.72rem;">Tipo: ${item.type}</small>
+              </div>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <button class="btn-zoom-imported" data-id="${item.id}" title="Hacer zoom a la capa" style="background: transparent; border: none; color: var(--emerald-primary); cursor: pointer; padding: 4px; font-size: 0.88rem;">
+                  <i class="fa-solid fa-magnifying-glass-location"></i>
+                </button>
+                <button class="btn-toggle-imported" data-id="${item.id}" title="Ocultar/Mostrar capa" style="background: transparent; border: none; color: #00f0ff; cursor: pointer; padding: 4px; font-size: 0.88rem;">
+                  <i class="fa-solid ${item.visible !== false ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                </button>
+                <button class="btn-remove-imported" data-id="${item.id}" title="Retirar esta capa" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 4px; font-size: 0.88rem;">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+
+          // Bind zoom
+          modalList.querySelectorAll('.btn-zoom-imported').forEach(b => {
+            b.addEventListener('click', () => {
+              const id = b.getAttribute('data-id');
+              const it = state.importedLayers.find(x => x.id === id);
+              if (it && it.layer) {
+                try {
+                  state.map.fitBounds(it.layer.getBounds());
+                  closeModal('modal-import');
+                } catch(e) {}
+              }
+            });
+          });
+
+          // Bind toggle
+          modalList.querySelectorAll('.btn-toggle-imported').forEach(b => {
+            b.addEventListener('click', () => {
+              const id = b.getAttribute('data-id');
+              toggleImportedLayerVisibility(id);
+            });
+          });
+
+          // Bind remove
+          modalList.querySelectorAll('.btn-remove-imported').forEach(b => {
+            b.addEventListener('click', () => {
+              const id = b.getAttribute('data-id');
+              removeImportedLayer(id);
+            });
+          });
+        }
+      } else {
+        modalSection.style.display = 'none';
+      }
+    }
   }
 
   /* ==========================================================================
