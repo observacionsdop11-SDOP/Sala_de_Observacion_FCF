@@ -157,6 +157,18 @@
     <div class="map-view-wrapper">
       <div id="map"></div>
 
+      <!-- Floating Spatial Search Bar (Buscador y Selector de Atributos Avanzado) -->
+      <div class="gis-search-widget" id="gis-search-widget">
+        <div class="gis-search-input-group">
+          <i class="fa-solid fa-magnifying-glass gis-search-icon"></i>
+          <input type="text" id="input-spatial-search" placeholder="Buscar departamento, provincia o río..." autocomplete="off" spellcheck="false" />
+          <button id="btn-clear-search" class="btn-clear-search" title="Limpiar búsqueda" style="display: none;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="gis-search-dropdown" id="search-dropdown-results" style="display: none;"></div>
+      </div>
+
       <!-- Top Floating KPIs Panel -->
       <section class="kpi-floating-panel collapsed" id="kpi-floating-panel">
         <button class="kpi-toggle-btn" id="btn-toggle-kpi" title="Mostrar/Ocultar Indicadores">
@@ -330,6 +342,10 @@
             <button class="btn-tool" id="btn-toggle-table">
               <i class="fa-solid fa-table-list"></i>
               <span>Tabla de Atributos</span>
+            </button>
+            <button class="btn-tool" id="btn-open-wms-modal" style="border-color: rgba(245, 158, 11, 0.4); color: var(--fire-amber);">
+              <i class="fa-solid fa-network-wired"></i>
+              <span>Conectar WMS (OGC)</span>
             </button>
             <button class="btn-tool" id="btn-clear-drawings">
               <i class="fa-solid fa-trash-can"></i>
@@ -941,6 +957,101 @@
           </button>
         </div>
       </div>
+    </article>
+  </div>
+
+  <!-- MODAL CONECTOR DE SERVICIOS OGC (WMS / WMTS) -->
+  <div class="modal-overlay" id="modal-wms">
+    <article class="modal-card" style="max-width: 680px;">
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-title-icon" style="color: var(--fire-amber); border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.15);">
+            <i class="fa-solid fa-network-wired"></i>
+          </div>
+          <div>
+            <h2 class="modal-title" style="font-size: 1.15rem;">Conexión a Servicios OGC (WMS / WMTS)</h2>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Interoperabilidad con geoservicios del Estado Peruano e internacionales</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" data-close="modal-wms">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+      <div class="modal-body">
+        <!-- Catálogo de Servicios Preconfigurados -->
+        <div style="margin-bottom: 18px;">
+          <label style="font-size: 0.85rem; font-weight: 600; color: var(--emerald-light); margin-bottom: 8px; display: block;">
+            <i class="fa-solid fa-bookmark"></i> Geoservicios WMS Preconfigurados:
+          </label>
+          <div class="wms-preset-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
+            <button class="btn-wms-preset" data-url="https://ows.terrestris.de/osm/service" data-layer="TOPO-WMS" data-title="Topografía y Relieve OGC">
+              <i class="fa-solid fa-mountain-sun"></i>
+              <div>
+                <strong>Topografía & Relieve (OGC)</strong>
+                <small>Curvas de nivel y sombreado digital</small>
+              </div>
+            </button>
+            <button class="btn-wms-preset" data-url="https://ows.terrestris.de/osm/service" data-layer="OSM-WMS" data-title="Cartografía Base OSM (WMS)">
+              <i class="fa-solid fa-map-location-dot"></i>
+              <div>
+                <strong>Cartografía Base OSM (WMS)</strong>
+                <small>Vías, poblados y límites globales</small>
+              </div>
+            </button>
+            <button class="btn-wms-preset" data-url="https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi" data-layer="nexrad-n0r" data-title="Radar Meteorológico Satelital">
+              <i class="fa-solid fa-cloud-bolt"></i>
+              <div>
+                <strong>Radar Meteorológico Satelital</strong>
+                <small>Reflectividad satelital y nubes</small>
+              </div>
+            </button>
+            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_01_01:g_01_01_001_03_001_501_0000_00_00" data-title="SENAMHI — Temperatura y Clima Perú">
+              <i class="fa-solid fa-temperature-half"></i>
+              <div>
+                <strong>SENAMHI Perú (IDE-SEP)</strong>
+                <small>Meteorología y Clima Nacional</small>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Formulario para WMS Personalizado -->
+        <div style="background: rgba(30, 41, 59, 0.5); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+          <label style="font-size: 0.85rem; font-weight: 600; color: #fff; margin-bottom: 8px; display: block;">
+            <i class="fa-solid fa-link"></i> O Conectar Servidor WMS Personalizado:
+          </label>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div>
+              <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 4px;">URL del servicio WMS / GeoServer:</label>
+              <input type="url" id="wms-input-url" class="filter-select" style="width: 100%; font-size: 0.85rem; padding: 7px 10px; border-radius: 6px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-glass); color: #fff;" placeholder="https://geoservidor.minam.gob.pe/geoserver/wms" />
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 180px;">
+                <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Nombre de la Capa (LAYERS):</label>
+                <input type="text" id="wms-input-layer" class="filter-select" style="width: 100%; font-size: 0.85rem; padding: 7px 10px; border-radius: 6px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-glass); color: #fff;" placeholder="ej. TOPO-WMS o anp:anp_definitivas" />
+              </div>
+              <div style="flex: 1; min-width: 140px;">
+                <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Título para el mapa:</label>
+                <input type="text" id="wms-input-title" class="filter-select" style="width: 100%; font-size: 0.85rem; padding: 7px 10px; border-radius: 6px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-glass); color: #fff;" placeholder="ej. Mi Capa WMS" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Capas WMS Conectadas Activas -->
+        <div id="wms-active-layers-container" style="margin-top: 14px; display: none;">
+          <label style="font-size: 0.82rem; font-weight: 600; color: var(--emerald-primary);">
+            <i class="fa-solid fa-layer-group"></i> Capas WMS Conectadas al Mapa:
+          </label>
+          <div id="wms-active-list" style="margin-top: 6px; display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+      </div>
+      <footer class="modal-footer" style="padding: 12px 18px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <span style="font-size: 0.78rem; color: var(--text-muted);"><i class="fa-solid fa-circle-check" style="color: var(--emerald-primary);"></i> Protocolo estándar OGC WMS 1.1.1 / 1.3.0</span>
+        <button class="btn-header btn-header-accent" id="btn-load-custom-wms" style="padding: 8px 18px; font-weight: 600;">
+          <i class="fa-solid fa-plus"></i> Conectar Capa al Mapa
+        </button>
+      </footer>
     </article>
   </div>
 

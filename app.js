@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initModals();
   initAttributeTable();
   initVisitorCounter();
+  initSpatialSearch();
+  initWmsManager();
 
   /* ==========================================================================
      1. Configuración de Proyecciones UTM Perú (Proj4js)
@@ -1428,5 +1430,323 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       el.innerText = current.toLocaleString();
     }, 30);
+  }
+
+  /* ==========================================================================
+     12. Buscador y Selector de Atributos Avanzado (Filtro Espacial y Ficha)
+     ========================================================================== */
+  function initSpatialSearch() {
+    const input = document.getElementById('input-spatial-search');
+    const dropdown = document.getElementById('search-dropdown-results');
+    const btnClear = document.getElementById('btn-clear-search');
+    if (!input || !dropdown) return;
+
+    let searchIndex = [];
+    let highlightLayer = null;
+
+    // Cargar índice espacial desde departamentos y provincias
+    function buildSearchIndex() {
+      // 1. Departamentos
+      fetch('./data/departamentos.geojson')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.features) {
+            data.features.forEach(f => {
+              const name = f.properties.NOMBDPTO || f.properties.NOMBRE || 'DEPARTAMENTO';
+              const capital = f.properties.CAPITAL || '';
+              searchIndex.push({
+                title: name.toUpperCase(),
+                subtitle: `Departamento del Perú${capital ? ' • Capital: ' + capital : ''}`,
+                type: 'Departamento',
+                category: 'departamento',
+                feature: f
+              });
+            });
+          }
+        })
+        .catch(() => {});
+
+      // 2. Provincias
+      fetch('./data/provincias.geojson')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.features) {
+            data.features.forEach(f => {
+              const prov = f.properties.PROVINCIA || f.properties.NOMBRE || 'PROVINCIA';
+              const depto = f.properties.DEPARTAMEN || f.properties.DEPARTAMENTO || '';
+              searchIndex.push({
+                title: prov.toUpperCase(),
+                subtitle: `Provincia • Depto. ${depto}`,
+                type: 'Provincia',
+                category: 'provincia',
+                feature: f
+              });
+            });
+          }
+        })
+        .catch(() => {});
+    }
+
+    buildSearchIndex();
+
+    function renderResults(results) {
+      if (results.length === 0) {
+        dropdown.innerHTML = `
+          <div style="padding: 12px 16px; font-size: 0.82rem; color: #94a3b8; text-align: center;">
+            <i class="fa-solid fa-circle-info" style="color: var(--fire-amber);"></i> No se encontraron resultados
+          </div>
+        `;
+        dropdown.style.display = 'block';
+        return;
+      }
+
+      dropdown.innerHTML = results.map((item, idx) => `
+        <div class="search-item" data-index="${idx}">
+          <div class="search-item-info">
+            <span class="search-item-title">${item.title}</span>
+            <span class="search-item-sub">${item.subtitle}</span>
+          </div>
+          <span class="search-item-badge">${item.type}</span>
+        </div>
+      `).join('');
+      dropdown.style.display = 'block';
+
+      dropdown.querySelectorAll('.search-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const idx = parseInt(el.getAttribute('data-index'), 10);
+          selectSearchResult(results[idx]);
+        });
+      });
+    }
+
+    function selectSearchResult(item) {
+      dropdown.style.display = 'none';
+      input.value = item.title;
+      if (btnClear) btnClear.style.display = 'inline-block';
+
+      const feat = item.feature;
+      if (!feat || !feat.geometry) return;
+
+      // Limpiar resaltado previo
+      if (highlightLayer) {
+        state.map.removeLayer(highlightLayer);
+      }
+
+      // Crear capa de resaltado brillante
+      highlightLayer = L.geoJSON(feat, {
+        style: {
+          color: '#00f0ff',
+          weight: 4,
+          opacity: 1,
+          fillColor: '#00f0ff',
+          fillOpacity: 0.25,
+          dashArray: '6, 6'
+        }
+      }).addTo(state.map);
+
+      // Zoom suave con animación
+      const bounds = highlightLayer.getBounds();
+      state.map.flyToBounds(bounds, {
+        padding: [60, 60],
+        maxZoom: item.category === 'departamento' ? 8 : 11,
+        duration: 1.2
+      });
+
+      // Cálculos geométricos con Turf.js
+      let areaHaText = 'No disponible';
+      let perimeterKmText = 'No disponible';
+      let centroidCoords = '';
+      let utmCoords = '';
+
+      if (typeof turf !== 'undefined') {
+        try {
+          const areaM2 = turf.area(feat);
+          const areaHa = (areaM2 / 10000).toLocaleString('es-PE', { maximumFractionDigits: 1 });
+          const areaKm2 = (areaM2 / 1000000).toLocaleString('es-PE', { maximumFractionDigits: 2 });
+          areaHaText = `${areaHa} ha (${areaKm2} km²)`;
+
+          const perimKm = turf.length(feat, { units: 'kilometers' }).toLocaleString('es-PE', { maximumFractionDigits: 2 });
+          perimeterKmText = `${perimKm} km`;
+
+          const centroid = turf.centroid(feat);
+          const cLon = centroid.geometry.coordinates[0];
+          const cLat = centroid.geometry.coordinates[1];
+          centroidCoords = `${cLat.toFixed(4)}°, ${cLon.toFixed(4)}°`;
+
+          if (typeof proj4 !== 'undefined') {
+            const utmRes = proj4('EPSG:4326', 'EPSG:32718', [cLon, cLat]);
+            utmCoords = `Zona 18S | E: ${Math.round(utmRes[0]).toLocaleString('es-PE')}, N: ${Math.round(utmRes[1]).toLocaleString('es-PE')}`;
+          }
+        } catch (e) {}
+      }
+
+      // Pop-up con Ficha Técnica Detallada
+      const popupHtml = `
+        <div style="min-width: 240px; font-family: inherit;">
+          <h4 style="margin: 0 0 6px 0; color: var(--emerald-primary); font-size: 1rem; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-map-location-dot"></i> ${item.title}
+          </h4>
+          <span style="font-size: 0.76rem; color: #94a3b8; display: block; margin-bottom: 8px;">${item.subtitle}</span>
+          <div style="font-size: 0.8rem; line-height: 1.5; color: #f8fafc; background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+            <strong>📐 Área Territorial:</strong> ${areaHaText}<br/>
+            <strong>📏 Perímetro:</strong> ${perimeterKmText}<br/>
+            ${centroidCoords ? `<strong>🌐 Centroide WGS84:</strong> ${centroidCoords}<br/>` : ''}
+            ${utmCoords ? `<strong>🧭 UTM Proj4:</strong> ${utmCoords}` : ''}
+          </div>
+          <div style="margin-top: 8px; display: flex; gap: 6px;">
+            <button onclick="document.getElementById('btn-toggle-table').click();" class="btn-tool" style="padding: 4px 8px; font-size: 0.75rem; flex: 1; justify-content: center;">
+              <i class="fa-solid fa-table-list"></i> Ver Atributos
+            </button>
+          </div>
+        </div>
+      `;
+
+      highlightLayer.bindPopup(popupHtml).openPopup();
+    }
+
+    input.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toUpperCase();
+      if (!q) {
+        dropdown.style.display = 'none';
+        if (btnClear) btnClear.style.display = 'none';
+        return;
+      }
+      if (btnClear) btnClear.style.display = 'inline-block';
+
+      // Búsqueda inteligente: coincidencias por inicio o contenga
+      const matched = searchIndex.filter(item => {
+        return item.title.includes(q) || item.subtitle.toUpperCase().includes(q);
+      }).slice(0, 10);
+
+      renderResults(matched);
+    });
+
+    if (btnClear) {
+      btnClear.addEventListener('click', () => {
+        input.value = '';
+        dropdown.style.display = 'none';
+        btnClear.style.display = 'none';
+        if (highlightLayer) {
+          state.map.removeLayer(highlightLayer);
+          highlightLayer = null;
+        }
+      });
+    }
+
+    // Cerrar sugerencias al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#gis-search-widget')) {
+        dropdown.style.display = 'none';
+      }
+    });
+  }
+
+  /* ==========================================================================
+     13. Conector de Servicios OGC (WMS / WMTS)
+     ========================================================================== */
+  function initWmsManager() {
+    const btnOpenWms = document.getElementById('btn-open-wms-modal');
+    const btnLoadCustom = document.getElementById('btn-load-custom-wms');
+    const inputUrl = document.getElementById('wms-input-url');
+    const inputLayer = document.getElementById('wms-input-layer');
+    const inputTitle = document.getElementById('wms-input-title');
+    const activeContainer = document.getElementById('wms-active-layers-container');
+    const activeList = document.getElementById('wms-active-list');
+
+    if (btnOpenWms) {
+      btnOpenWms.addEventListener('click', () => {
+        openModal('modal-wms');
+      });
+    }
+
+    // Conectar Capa WMS
+    function addWmsLayer(url, layerName, title) {
+      try {
+        const wmsLayer = L.tileLayer.wms(url, {
+          layers: layerName,
+          format: 'image/png',
+          transparent: true,
+          version: '1.1.1',
+          attribution: `WMS: ${title}`
+        });
+
+        wmsLayer.addTo(state.map);
+
+        // Registrar en estado
+        const layerId = 'wms_' + Date.now();
+        if (!state.wmsLayers) state.wmsLayers = {};
+        state.wmsLayers[layerId] = { layer: wmsLayer, title: title, url: url, layerName: layerName };
+
+        updateActiveWmsUI();
+        closeModal('modal-wms');
+
+        // Notificación amigable
+        alert(`✅ Capa WMS conectada exitosamente:\n"${title}" añadida al visor.`);
+      } catch (err) {
+        alert('⚠️ No se pudo cargar el servicio WMS. Verifica la URL y el nombre de la capa.');
+      }
+    }
+
+    function updateActiveWmsUI() {
+      if (!activeList || !activeContainer) return;
+      const keys = Object.keys(state.wmsLayers || {});
+      if (keys.length === 0) {
+        activeContainer.style.display = 'none';
+        return;
+      }
+
+      activeContainer.style.display = 'block';
+      activeList.innerHTML = keys.map(k => {
+        const item = state.wmsLayers[k];
+        return `
+          <div class="wms-active-item" id="item-${k}">
+            <div>
+              <strong>${item.title}</strong>
+              <small style="display: block; color: #94a3b8; font-size: 0.72rem;">${item.layerName}</small>
+            </div>
+            <button class="btn-remove-wms" data-id="${k}" title="Remover capa WMS">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      activeList.querySelectorAll('.btn-remove-wms').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const k = btn.getAttribute('data-id');
+          if (state.wmsLayers && state.wmsLayers[k]) {
+            state.map.removeLayer(state.wmsLayers[k].layer);
+            delete state.wmsLayers[k];
+            updateActiveWmsUI();
+          }
+        });
+      });
+    }
+
+    // Preset Clicks
+    document.querySelectorAll('.btn-wms-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.getAttribute('data-url');
+        const layerName = btn.getAttribute('data-layer');
+        const title = btn.getAttribute('data-title');
+        addWmsLayer(url, layerName, title);
+      });
+    });
+
+    // Custom WMS Submit
+    if (btnLoadCustom) {
+      btnLoadCustom.addEventListener('click', () => {
+        const url = (inputUrl?.value || '').trim();
+        const layerName = (inputLayer?.value || '').trim();
+        const title = (inputTitle?.value || '').trim() || layerName;
+
+        if (!url || !layerName) {
+          alert('Por favor ingresa la URL del servicio WMS y el nombre de la capa (LAYERS).');
+          return;
+        }
+
+        addWmsLayer(url, layerName, title);
+      });
+    }
   }
 });
