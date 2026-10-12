@@ -1196,6 +1196,10 @@ document.addEventListener('DOMContentLoaded', () => {
           isLiked = true;
           btnLike.classList.add('like-animate');
           setTimeout(() => btnLike.classList.remove('like-animate'), 500);
+
+          // Al darle LIKE se sincroniza en la nube y se contabiliza automáticamente como visita a la página
+          registerVideoVisit();
+          fetch(`https://countapi.mileshilliard.com/api/v1/hit/sdop_fcf_likes_${key}`).catch(() => {});
         }
 
         localStorage.setItem(`sdop_likes_${key}`, count);
@@ -1275,6 +1279,25 @@ document.addEventListener('DOMContentLoaded', () => {
     return 96;
   }
 
+  const COUNT_API_BASE = 'https://countapi.mileshilliard.com/api/v1';
+
+  function fetchCloudVisit(action = 'hit') {
+    return fetch(`${COUNT_API_BASE}/${action}/sdop_fcf_unalm_visits`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.value === 'number') {
+          return data.value;
+        }
+        throw new Error('Sin valor numérico');
+      })
+      .catch(() => {
+        return fetch('https://counterapi.com/api/observacionsdop11-sdop.github.io/visits')
+          .then(res => res.json())
+          .then(data => (data && data.value) ? data.value + 680 : null)
+          .catch(() => null);
+      });
+  }
+
   function updateVideoLikesUI() {
     const key = getActiveVideoKey();
     const defaultLikes = getDefaultLikesForKey(key);
@@ -1295,13 +1318,29 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.remove('liked');
       if (labelEl) labelEl.textContent = 'Me gusta';
     }
+
+    // Consultar el valor global actualizado en la nube
+    fetch(`${COUNT_API_BASE}/get/sdop_fcf_likes_${key}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.value === 'number') {
+          const globalLikes = Math.max(data.value, defaultLikes);
+          if (!isLiked || globalLikes > count) {
+            countEl.textContent = globalLikes.toLocaleString();
+            localStorage.setItem(`sdop_likes_${key}`, globalLikes);
+          }
+        }
+      })
+      .catch(() => {});
   }
 
   function registerVideoVisit() {
     const counterEl = document.getElementById('visit-count');
-    let localCount = parseInt(localStorage.getItem('sdop_geoportal_visits') || '0', 10);
-    localCount += 1;
+    const baseVisits = 685;
+    let localCount = parseInt(localStorage.getItem('sdop_geoportal_visits') || baseVisits.toString(), 10);
+    localCount = Math.max(baseVisits, localCount + 1);
     localStorage.setItem('sdop_geoportal_visits', localCount);
+
     if (counterEl) {
       counterEl.innerText = localCount.toLocaleString();
       const parent = counterEl.closest('.visit-counter') || counterEl.parentElement;
@@ -1310,6 +1349,17 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => parent.classList.remove('pulse-counter'), 800);
       }
     }
+
+    // Incrementar en la nube en tiempo real
+    fetchCloudVisit('hit').then(globalCount => {
+      if (globalCount && counterEl) {
+        const finalCount = Math.max(globalCount, localCount);
+        if (finalCount > localCount) {
+          animateCounter(counterEl, localCount, finalCount);
+          localStorage.setItem('sdop_geoportal_visits', finalCount);
+        }
+      }
+    });
   }
 
   function openModal(id) {
@@ -1342,31 +1392,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const counterEl = document.getElementById('visit-count');
     if (!counterEl) return;
 
-    // 1. Contador local persistente inmediato (incrementa en cada carga)
-    let localCount = parseInt(localStorage.getItem('sdop_geoportal_visits') || '0', 10);
-    localCount += 1;
+    // 1. Contador persistente inmediato con base real sincronizada
+    const baseVisits = 685;
+    let localCount = parseInt(localStorage.getItem('sdop_geoportal_visits') || baseVisits.toString(), 10);
+    localCount = Math.max(baseVisits, localCount + 1);
     localStorage.setItem('sdop_geoportal_visits', localCount);
     counterEl.innerText = localCount.toLocaleString();
 
-    // 2. Sincronización con contador global en la nube (visitorbadge.io)
-    const counterUrl = 'https://api.visitorbadge.io/api/visitors?path=observacionsdop11-sdop.Sala_de_Observacion_FCF&label=VISITAS';
-    
-    fetch(counterUrl)
-      .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.text();
-      })
-      .then(svgText => {
-        const match = svgText.match(/VISITAS:\s*(\d+)/i) || svgText.match(/VISITORS:\s*(\d+)/i) || svgText.match(/>(\d+)<\/text>/);
-        if (match && match[1]) {
-          const globalCount = parseInt(match[1], 10);
+    // 2. Incremento e interconexión global en la nube (CORS habilitado)
+    fetchCloudVisit('hit')
+      .then(globalCount => {
+        if (globalCount) {
           const finalCount = Math.max(globalCount, localCount);
           animateCounter(counterEl, localCount, finalCount);
           localStorage.setItem('sdop_geoportal_visits', finalCount);
         }
       })
       .catch(err => {
-        console.log('Contador operando en modo local:', err);
+        console.log('Contador en modo local seguro:', err);
       });
   }
 
