@@ -86,7 +86,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
   <!-- Estilos Personalizados -->
-  <link rel="stylesheet" href="styles.css?v=20261012-ogc-v2" />
+  <link rel="stylesheet" href="styles.css?v=20261012-senamhi-fix" />
 </head>
 <body>
 
@@ -1039,11 +1039,36 @@
                 <small>Reflectividad satelital y nubes</small>
               </div>
             </button>
-            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_00_01:00_01_Capital_Departamento_Peru" data-title="SENAMHI Perú (IDE-SEP GeoServer)">
-              <i class="fa-solid fa-temperature-half" style="color: #06b6d4;"></i>
+            <!-- SENAMHI Cuencas Hidrográficas -->
+            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_00_06:00_06_001_03_000_000_0000_00_00" data-title="SENAMHI — Cuencas Hidrográficas del Perú">
+              <i class="fa-solid fa-water" style="color: #06b6d4;"></i>
               <div>
-                <strong>SENAMHI Perú (IDE-SEP)</strong>
-                <small>Geoservicio GeoServer Oficial SENAMHI</small>
+                <strong>SENAMHI — Cuencas Hidrográficas</strong>
+                <small>Vertientes y cuencas oficiales del Perú</small>
+              </div>
+            </button>
+            <!-- SENAMHI Clima y Temperatura -->
+            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_04_05:04_05_008_03_002_512_0000_00_00" data-title="SENAMHI — Anomalía de Temperatura (Clima)">
+              <i class="fa-solid fa-temperature-half" style="color: #f97316;"></i>
+              <div>
+                <strong>SENAMHI — Anomalía de Temperatura</strong>
+                <small>Monitoreo climático y calor en el Perú</small>
+              </div>
+            </button>
+            <!-- SENAMHI Red Hídrica -->
+            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_00_05:00_05_001_03_000_000_0000_00_00" data-title="SENAMHI — Red Hídrica Nacional (Ríos)">
+              <i class="fa-solid fa-droplet" style="color: #38bdf8;"></i>
+              <div>
+                <strong>SENAMHI — Red Hídrica Nacional</strong>
+                <small>Ríos y drenajes del territorio nacional</small>
+              </div>
+            </button>
+            <!-- SENAMHI Departamentos -->
+            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_00_02:00_02_002_03_000_000_0000_00_00" data-title="SENAMHI — Límites Departamentales">
+              <i class="fa-solid fa-map-location-dot" style="color: #34d399;"></i>
+              <div>
+                <strong>SENAMHI — Límites Departamentales</strong>
+                <small>Cartografía departamental IDE-SEP</small>
               </div>
             </button>
           </div>
@@ -1133,6 +1158,6 @@
   <script src="https://unpkg.com/shp-write@latest/shpwrite.js"></script>
 
   <!-- Main App Script -->
-  <script src="app.js?v=20261012-ogc-v2"></script>
+  <script src="app.js?v=20261012-senamhi-fix"></script>
 </body>
 </html>

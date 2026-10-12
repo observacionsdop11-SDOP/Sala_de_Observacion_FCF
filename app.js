@@ -1774,6 +1774,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         wmsLayer.addTo(state.map);
 
+        // Si es una capa temática del Perú (ej. SENAMHI), enfocar el mapa en territorio peruano
+        if (url.includes('senamhi.gob.pe') && state.map) {
+          state.map.setView([-9.3, -75.0], 5.5, { animate: true });
+        }
+
         // Registrar en estado
         const layerId = 'wms_' + Date.now();
         if (!state.wmsLayers) state.wmsLayers = {};
