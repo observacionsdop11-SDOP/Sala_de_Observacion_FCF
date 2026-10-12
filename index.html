@@ -86,7 +86,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
   <!-- Estilos Personalizados -->
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20261012-ogc-v2" />
 </head>
 <body>
 
@@ -123,6 +123,10 @@
       <button class="btn-header" id="btn-geoportals" style="border-color: rgba(245, 158, 11, 0.4); color: var(--fire-amber);">
         <i class="fa-solid fa-earth-americas"></i>
         <span>Fuentes Geoportales</span>
+      </button>
+      <button class="btn-header" id="btn-header-wms" data-modal-open="modal-wms" onclick="window.openModal ? window.openModal('modal-wms') : document.getElementById('modal-wms').classList.add('active')" style="border-color: rgba(245, 158, 11, 0.6); color: var(--fire-amber); background: rgba(245, 158, 11, 0.12);">
+        <i class="fa-solid fa-network-wired"></i>
+        <span>Conector WMS (OGC)</span>
       </button>
       <button class="btn-header btn-header-accent" id="btn-import">
         <i class="fa-solid fa-file-import"></i>
@@ -343,7 +347,7 @@
               <i class="fa-solid fa-table-list"></i>
               <span>Tabla de Atributos</span>
             </button>
-            <button class="btn-tool" id="btn-open-wms-modal" style="border-color: rgba(245, 158, 11, 0.4); color: var(--fire-amber);">
+            <button class="btn-tool" id="btn-open-wms-modal" data-modal-open="modal-wms" onclick="window.openModal ? window.openModal('modal-wms') : document.getElementById('modal-wms').classList.add('active')" style="border-color: rgba(245, 158, 11, 0.5); color: var(--fire-amber); background: rgba(245, 158, 11, 0.08);">
               <i class="fa-solid fa-network-wired"></i>
               <span>Conectar WMS (OGC)</span>
             </button>
@@ -620,6 +624,22 @@
         </button>
       </header>
       <div class="modal-body" style="padding: 20px 24px; overflow-x: auto;">
+        <!-- Acceso directo al Conector de Geoservicios WMS -->
+        <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; border-radius: 8px; background: rgba(245, 158, 11, 0.2); display: flex; align-items: center; justify-content: center; color: var(--fire-amber); font-size: 1.15rem; flex-shrink: 0;">
+              <i class="fa-solid fa-network-wired"></i>
+            </div>
+            <div>
+              <strong style="color: #fff; font-size: 0.92rem; display: block;">Conectar Geoservicios OGC (WMS / WMTS) al Visor</strong>
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Carga capas de NASA FIRMS, SENAMHI, Topografía o cualquier GeoServer directamente sobre el mapa.</span>
+            </div>
+          </div>
+          <button class="btn-header btn-header-accent" id="btn-open-wms-from-geoportals" onclick="window.closeModal && window.closeModal('modal-geoportals'); window.openModal ? window.openModal('modal-wms') : document.getElementById('modal-wms').classList.add('active');" style="padding: 7px 16px; font-weight: 600; font-size: 0.84rem;">
+            <i class="fa-solid fa-plug"></i> Abrir Conector WMS
+          </button>
+        </div>
+
         <table class="geoportals-table" style="width:100%; border-collapse:collapse; font-size: 0.9rem;">
           <thead>
             <tr style="background:rgba(245,158,11,0.2); color:var(--fire-amber);">
@@ -973,7 +993,7 @@
             <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Interoperabilidad con geoservicios del Estado Peruano e internacionales</p>
           </div>
         </div>
-        <button class="btn-close-modal" data-close="modal-wms">
+        <button class="btn-close-modal" data-close="modal-wms" onclick="window.closeModal && window.closeModal('modal-wms')">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </header>
@@ -981,35 +1001,49 @@
         <!-- Catálogo de Servicios Preconfigurados -->
         <div style="margin-bottom: 18px;">
           <label style="font-size: 0.85rem; font-weight: 600; color: var(--emerald-light); margin-bottom: 8px; display: block;">
-            <i class="fa-solid fa-bookmark"></i> Geoservicios WMS Preconfigurados:
+            <i class="fa-solid fa-bookmark"></i> Geoservicios WMS Preconfigurados (Clic para cargar al mapa):
           </label>
           <div class="wms-preset-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
+            <button class="btn-wms-preset" data-url="https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi" data-layer="VIIRS_SNPP_Thermal_Anomalies_375m_All" data-title="NASA VIIRS — Focos de Calor Satelitales">
+              <i class="fa-solid fa-fire-flame-curved" style="color: #ef4444;"></i>
+              <div>
+                <strong style="color: #fca5a5;">NASA VIIRS — Focos de Calor (WMS)</strong>
+                <small>Detección satelital de anomalías térmicas 375m</small>
+              </div>
+            </button>
             <button class="btn-wms-preset" data-url="https://ows.terrestris.de/osm/service" data-layer="TOPO-WMS" data-title="Topografía y Relieve OGC">
-              <i class="fa-solid fa-mountain-sun"></i>
+              <i class="fa-solid fa-mountain-sun" style="color: #f59e0b;"></i>
               <div>
                 <strong>Topografía & Relieve (OGC)</strong>
                 <small>Curvas de nivel y sombreado digital</small>
               </div>
             </button>
             <button class="btn-wms-preset" data-url="https://ows.terrestris.de/osm/service" data-layer="OSM-WMS" data-title="Cartografía Base OSM (WMS)">
-              <i class="fa-solid fa-map-location-dot"></i>
+              <i class="fa-solid fa-map-location-dot" style="color: #10b981;"></i>
               <div>
                 <strong>Cartografía Base OSM (WMS)</strong>
                 <small>Vías, poblados y límites globales</small>
               </div>
             </button>
+            <button class="btn-wms-preset" data-url="https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi" data-layer="VIIRS_SNPP_CorrectedReflectance_TrueColor" data-title="NASA VIIRS — Satélite Óptico Color Real">
+              <i class="fa-solid fa-satellite" style="color: #00f0ff;"></i>
+              <div>
+                <strong>NASA VIIRS — Color Real</strong>
+                <small>Mosaico diario óptico satelital global</small>
+              </div>
+            </button>
             <button class="btn-wms-preset" data-url="https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi" data-layer="nexrad-n0r" data-title="Radar Meteorológico Satelital">
-              <i class="fa-solid fa-cloud-bolt"></i>
+              <i class="fa-solid fa-cloud-bolt" style="color: #a855f7;"></i>
               <div>
                 <strong>Radar Meteorológico Satelital</strong>
                 <small>Reflectividad satelital y nubes</small>
               </div>
             </button>
-            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_01_01:g_01_01_001_03_001_501_0000_00_00" data-title="SENAMHI — Temperatura y Clima Perú">
-              <i class="fa-solid fa-temperature-half"></i>
+            <button class="btn-wms-preset" data-url="https://idesep.senamhi.gob.pe/geoserver/wms" data-layer="g_00_01:00_01_Capital_Departamento_Peru" data-title="SENAMHI Perú (IDE-SEP GeoServer)">
+              <i class="fa-solid fa-temperature-half" style="color: #06b6d4;"></i>
               <div>
                 <strong>SENAMHI Perú (IDE-SEP)</strong>
-                <small>Meteorología y Clima Nacional</small>
+                <small>Geoservicio GeoServer Oficial SENAMHI</small>
               </div>
             </button>
           </div>
@@ -1099,6 +1133,6 @@
   <script src="https://unpkg.com/shp-write@latest/shpwrite.js"></script>
 
   <!-- Main App Script -->
-  <script src="app.js"></script>
+  <script src="app.js?v=20261012-ogc-v2"></script>
 </body>
 </html>

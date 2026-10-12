@@ -3,6 +3,37 @@
    Lógica JavaScript Modular, Proj4js, Turf.js, Leaflet y GIS Importer
    ========================================================================== */
 
+// Funciones Globales para Control Inmediato de Modales
+window.openModal = function(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.add('active');
+  modal.style.display = 'flex';
+  modal.style.opacity = '1';
+  modal.style.visibility = 'visible';
+
+  if (id === 'modal-video') {
+    const activeTab = document.querySelector('.btn-video-tab.active') || document.querySelector('.btn-video-tab');
+    if (activeTab) {
+      activeTab.click();
+    }
+  }
+};
+
+window.closeModal = function(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.remove('active');
+  modal.style.display = 'none';
+  modal.style.opacity = '';
+  modal.style.visibility = '';
+
+  if (id === 'modal-video') {
+    const wrapper = document.getElementById('video-wrapper');
+    if (wrapper) wrapper.innerHTML = "";
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // Global State
   const state = {
@@ -16,20 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
     nextFeatureId: 1
   };
 
-  // Initialize Application Components
-  initProjections();
-  initMap();
-  initAnimatedKPIs();
-  initLayerSelector();
-  initVectorBoundaryLayers();
-  initDrawingTools();
-  initCoordinateTracker();
-  initDragAndDrop();
-  initModals();
-  initAttributeTable();
-  initVisitorCounter();
-  initSpatialSearch();
-  initWmsManager();
+  // Initialize Application Components (Tolerante a fallos para máxima robustez)
+  try { initProjections(); } catch (e) { console.warn('initProjections error:', e); }
+  try { initMap(); } catch (e) { console.error('initMap error:', e); }
+  try { initAnimatedKPIs(); } catch (e) { console.warn('initAnimatedKPIs error:', e); }
+  try { initLayerSelector(); } catch (e) { console.warn('initLayerSelector error:', e); }
+  try { initVectorBoundaryLayers(); } catch (e) { console.warn('initVectorBoundaryLayers error:', e); }
+  try { initDrawingTools(); } catch (e) { console.warn('initDrawingTools error:', e); }
+  try { initCoordinateTracker(); } catch (e) { console.warn('initCoordinateTracker error:', e); }
+  try { initDragAndDrop(); } catch (e) { console.warn('initDragAndDrop error:', e); }
+  try { initModals(); } catch (e) { console.warn('initModals error:', e); }
+  try { initAttributeTable(); } catch (e) { console.warn('initAttributeTable error:', e); }
+  try { initVisitorCounter(); } catch (e) { console.warn('initVisitorCounter error:', e); }
+  try { initSpatialSearch(); } catch (e) { console.warn('initSpatialSearch error:', e); }
+  try { initWmsManager(); } catch (e) { console.warn('initWmsManager error:', e); }
 
   /* ==========================================================================
      1. Configuración de Proyecciones UTM Perú (Proj4js)
@@ -978,6 +1009,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnImport = document.getElementById('btn-import');
     const btnGeoportals = document.getElementById('btn-geoportals');
     const btnExportHeader = document.getElementById('btn-export-header');
+    const btnHeaderWms = document.getElementById('btn-header-wms');
+    const btnOpenWms = document.getElementById('btn-open-wms-modal');
+    const btnOpenWmsFromGeoportals = document.getElementById('btn-open-wms-from-geoportals');
 
     if (btnAbout) btnAbout.addEventListener('click', () => openModal('modal-about'));
     if (btnMethodology) btnMethodology.addEventListener('click', () => openModal('modal-methodology'));
@@ -986,6 +1020,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnGeoportals) btnGeoportals.addEventListener('click', () => openModal('modal-geoportals'));
     if (btnImport) btnImport.addEventListener('click', () => openModal('modal-import'));
     if (btnExportHeader) btnExportHeader.addEventListener('click', exportToShapefileZip);
+    if (btnHeaderWms) btnHeaderWms.addEventListener('click', () => openModal('modal-wms'));
+    if (btnOpenWms) btnOpenWms.addEventListener('click', () => openModal('modal-wms'));
+    if (btnOpenWmsFromGeoportals) btnOpenWmsFromGeoportals.addEventListener('click', () => {
+      closeModal('modal-geoportals');
+      openModal('modal-wms');
+    });
+
+    // Delegación global para cualquier botón que declare data-modal-open
+    document.querySelectorAll('[data-modal-open]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = btn.getAttribute('data-modal-open');
+        if (target) openModal(target);
+      });
+    });
 
     // Toggle KPI Floating Panel (Abrir y Cerrar en cada clic)
     const btnToggleKpi = document.getElementById('btn-toggle-kpi');
@@ -1365,8 +1414,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.classList.add('active');
+    if (window.openModal) {
+      window.openModal(id);
+    } else {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+      }
+    }
     if (id === 'modal-video') {
       const activeTab = document.querySelector('.btn-video-tab.active') || document.querySelector('.btn-video-tab');
       if (activeTab) {
@@ -1379,8 +1435,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.classList.remove('active');
+    if (window.closeModal) {
+      window.closeModal(id);
+    } else {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+      }
+    }
     if (id === 'modal-video') {
       const wrapper = document.getElementById('video-wrapper');
       if (wrapper) wrapper.innerHTML = "";
@@ -1646,6 +1709,7 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   function initWmsManager() {
     const btnOpenWms = document.getElementById('btn-open-wms-modal');
+    const btnHeaderWms = document.getElementById('btn-header-wms');
     const btnLoadCustom = document.getElementById('btn-load-custom-wms');
     const inputUrl = document.getElementById('wms-input-url');
     const inputLayer = document.getElementById('wms-input-layer');
@@ -1654,20 +1718,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeList = document.getElementById('wms-active-list');
 
     if (btnOpenWms) {
-      btnOpenWms.addEventListener('click', () => {
+      btnOpenWms.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('modal-wms');
+      });
+    }
+    if (btnHeaderWms) {
+      btnHeaderWms.addEventListener('click', (e) => {
+        e.preventDefault();
         openModal('modal-wms');
       });
     }
 
-    // Conectar Capa WMS
+    // Toast flotante para feedback inmediato en pantalla
+    function showWmsToast(message, isSuccess = true) {
+      let toast = document.getElementById('wms-notification-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'wms-notification-toast';
+        document.body.appendChild(toast);
+      }
+      toast.className = `wms-toast ${isSuccess ? 'toast-success' : 'toast-error'}`;
+      toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> <span>${message}</span>`;
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+      }, 10);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => { toast.style.display = 'none'; }, 300);
+      }, 4500);
+    }
+
+    // Conectar Capa WMS al mapa
     function addWmsLayer(url, layerName, title) {
+      if (!state.map) {
+        alert('El mapa aún se está inicializando. Por favor intenta en unos instantes.');
+        return;
+      }
       try {
         const wmsLayer = L.tileLayer.wms(url, {
           layers: layerName,
           format: 'image/png',
           transparent: true,
           version: '1.1.1',
+          zIndex: 450,
           attribution: `WMS: ${title}`
+        });
+
+        wmsLayer.on('tileerror', (err) => {
+          console.warn(`Aviso de carga de mosaico WMS (${title}):`, err);
         });
 
         wmsLayer.addTo(state.map);
@@ -1680,10 +1782,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateActiveWmsUI();
         closeModal('modal-wms');
 
-        // Notificación amigable
-        alert(`✅ Capa WMS conectada exitosamente:\n"${title}" añadida al visor.`);
+        showWmsToast(`Capa WMS "${title}" conectada exitosamente al mapa.`, true);
       } catch (err) {
-        alert('⚠️ No se pudo cargar el servicio WMS. Verifica la URL y el nombre de la capa.');
+        console.error('Error al conectar capa WMS:', err);
+        showWmsToast('No se pudo conectar el servicio WMS. Verifica la URL y nombre de la capa.', false);
       }
     }
 
@@ -1700,17 +1802,43 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = state.wmsLayers[k];
         return `
           <div class="wms-active-item" id="item-${k}">
-            <div>
-              <strong>${item.title}</strong>
-              <small style="display: block; color: #94a3b8; font-size: 0.72rem;">${item.layerName}</small>
+            <div style="flex: 1; min-width: 0; padding-right: 8px;">
+              <strong style="display: block; font-size: 0.84rem; color: #f8fafc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</strong>
+              <small style="display: block; color: #94a3b8; font-size: 0.72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.layerName}</small>
             </div>
-            <button class="btn-remove-wms" data-id="${k}" title="Remover capa WMS">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button class="btn-toggle-wms" data-id="${k}" title="Ocultar/Mostrar capa" style="background: transparent; border: none; color: #00f0ff; cursor: pointer; padding: 4px; font-size: 0.88rem;">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button class="btn-remove-wms" data-id="${k}" title="Remover capa WMS">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
           </div>
         `;
       }).join('');
 
+      // Toggle visibilidad
+      activeList.querySelectorAll('.btn-toggle-wms').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const k = btn.getAttribute('data-id');
+          if (state.wmsLayers && state.wmsLayers[k]) {
+            const l = state.wmsLayers[k].layer;
+            const icon = btn.querySelector('i');
+            if (state.map.hasLayer(l)) {
+              state.map.removeLayer(l);
+              if (icon) icon.className = 'fa-solid fa-eye-slash';
+              btn.style.color = '#94a3b8';
+            } else {
+              state.map.addLayer(l);
+              if (icon) icon.className = 'fa-solid fa-eye';
+              btn.style.color = '#00f0ff';
+            }
+          }
+        });
+      });
+
+      // Remover capa
       activeList.querySelectorAll('.btn-remove-wms').forEach(btn => {
         btn.addEventListener('click', () => {
           const k = btn.getAttribute('data-id');
@@ -1718,6 +1846,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.map.removeLayer(state.wmsLayers[k].layer);
             delete state.wmsLayers[k];
             updateActiveWmsUI();
+            showWmsToast('Capa WMS retirada del mapa.', true);
           }
         });
       });
@@ -1725,17 +1854,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Preset Clicks
     document.querySelectorAll('.btn-wms-preset').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const url = btn.getAttribute('data-url');
         const layerName = btn.getAttribute('data-layer');
         const title = btn.getAttribute('data-title');
-        addWmsLayer(url, layerName, title);
+        if (url && layerName) {
+          addWmsLayer(url, layerName, title);
+        }
       });
     });
 
     // Custom WMS Submit
     if (btnLoadCustom) {
-      btnLoadCustom.addEventListener('click', () => {
+      btnLoadCustom.addEventListener('click', (e) => {
+        e.preventDefault();
         const url = (inputUrl?.value || '').trim();
         const layerName = (inputLayer?.value || '').trim();
         const title = (inputTitle?.value || '').trim() || layerName;
